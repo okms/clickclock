@@ -15,8 +15,8 @@ Model column is the default per `AGENTS.md`; escalate only as it allows.
 
 ## M2: App (browser-runnable via the mock platform)
 - [x] M2.1 `app/platform/platform.ts` interface + `app/platform/mock.ts` (localStorage, simulated idle control) — haiku — `9ff91f7`
-- [ ] M2.2 `app/index.html`, `app/styles.css`, `app/view/*`, `app/main.ts`: port `design/prototype.html` to the real app over the core; wires save cadence (transition + 30 s heartbeat) — DISP-*, TT-03, TT-05, TT-13, IDLE-04, IDLE-09, HIST-*, SET-*, NF-06 — haiku
-- [ ] M2.3 View tests for formatting/state mapping that do not need a browser — haiku
+- [x] M2.2 `app/index.html`, `app/styles.css`, `app/view/*`, `app/main.ts`: port `design/prototype.html` to the real app over the core; wires save cadence (transition + 30 s heartbeat) — DISP-*, TT-03, TT-05, TT-13, IDLE-04, IDLE-09, HIST-*, SET-*, NF-06 — haiku
+- [x] M2.3 View tests for formatting/state mapping that do not need a browser — haiku (in model.test.ts)
 
 ## M3: Shell (Tauri 2)
 - [x] M3.1 `src-tauri/` scaffold with the four commands, tray, autostart and single-instance plugins, close-hides-window — TRAY-01..04, TRAY-06, TRAY-07, AUTO-*, PERS-03, PERS-04 — sonnet — `b2502eb`
