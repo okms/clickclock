@@ -1,9 +1,9 @@
 {
-  "name": "consultant-timer",
+  "name": "clickclock",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Personal, local-only daily work timer.",
+  "description": "ClickClock: personal, local-only daily work timer.",
   "license": "MIT",
   "scripts": {
     "test": "TZ=Europe/Oslo vitest run",

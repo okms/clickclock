@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Consultant Timer</title>
+<title>ClickClock</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..900&display=swap" rel="stylesheet">
 <style>
 /* ------------------------------------------------------------------
-   Consultant Timer prototype
+   ClickClock prototype
    Tokens and components are the contract in docs/design/ui.md.
    The page shows two app frames (light, dark) driven by one state,
    plus a prototype control strip that is not part of the product.
@@ -241,7 +241,7 @@ body {
 <body>
 <div class="stage">
   <div class="stage-head">
-    <h1>Consultant Timer</h1>
+    <h1>ClickClock</h1>
     <p>Main view in light and dark. Both frames share one state. Use the strip at the bottom to step through states; it is not part of the product.</p>
   </div>
 
@@ -270,7 +270,7 @@ body {
 </div>
 
 <template id="app-tpl">
-  <div class="app" data-state="running" data-theme="light" aria-label="Consultant Timer">
+  <div class="app" data-state="running" data-theme="light" aria-label="ClickClock">
     <header class="top">
       <div class="state" data-slot="state-header">
         <div class="state-line"><span class="dot" aria-hidden="true"></span><span class="state-word" aria-live="polite">Running</span></div>

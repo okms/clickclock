@@ -60,7 +60,7 @@ export class MockPlatform implements Platform {
       this.storage = new InMemoryStorage();
     }
 
-    this.storageKey = opts?.storageKey ?? "consultant-timer.doc";
+    this.storageKey = opts?.storageKey ?? "clickclock.doc";
     this.clipboard = opts?.clipboard;
   }
 

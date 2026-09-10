@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Consultant Timer",
+  "productName": "ClickClock",
   "version": "0.1.0",
-  "identifier": "no.okms.consultant-timer",
+  "identifier": "no.okms.clickclock",
   "build": {
     "devUrl": "http://localhost:5173",
     "frontendDist": "../dist",
@@ -15,7 +15,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Consultant Timer",
+        "title": "ClickClock",
         "width": 380,
         "height": 520,
         "minWidth": 320,

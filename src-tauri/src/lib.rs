@@ -1,4 +1,4 @@
-//! Consultant Timer desktop shell.
+//! ClickClock desktop shell.
 //!
 //! This crate is the fixed Rust surface described in
 //! `docs/design/architecture.md` section 3.4: window, tray, two plugins,
@@ -198,5 +198,5 @@ pub fn run() {
             }
         })
         .run(tauri::generate_context!())
-        .expect("error while running the Consultant Timer application");
+        .expect("error while running ClickClock");
 }

@@ -1,4 +1,4 @@
-//! The document (`consultant-timer.json`) lives in the per-user app data
+//! The document (`clickclock.json`) lives in the per-user app data
 //! directory (PERS-03). Writing it must never leave a partially written file
 //! on disk (PERS-04): every write goes to a sibling `.tmp` file first and is
 //! then renamed into place, which is atomic on the same filesystem.
@@ -8,7 +8,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 /// The document's file name inside the app data directory.
-pub const DOC_FILENAME: &str = "consultant-timer.json";
+pub const DOC_FILENAME: &str = "clickclock.json";
 
 /// Read the document at `path`. Returns `Ok(None)` if the file does not
 /// exist yet (first run).
@@ -49,7 +49,7 @@ mod tests {
     fn scratch_dir(name: &str) -> PathBuf {
         let mut dir = std::env::temp_dir();
         dir.push(format!(
-            "consultant-timer-doc-test-{}-{}",
+            "clickclock-doc-test-{}-{}",
             name,
             std::process::id()
         ));
@@ -104,7 +104,7 @@ mod tests {
     fn atomic_write_creates_the_app_data_dir_if_missing() {
         let mut dir = std::env::temp_dir();
         dir.push(format!(
-            "consultant-timer-doc-test-missing-dir-{}",
+            "clickclock-doc-test-missing-dir-{}",
             std::process::id()
         ));
         let _ = fs::remove_dir_all(&dir);
