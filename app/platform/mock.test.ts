@@ -81,12 +81,12 @@ describe("MockPlatform", () => {
 
   it("TRAY-02: setTray records lastTray", async () => {
     const status = {
-      tooltip: "Running, 7.50 hours (07:30)",
+      tooltip: "Running, 7:30 (7.50 hours)",
       running: true,
       canStart: false,
       canPause: true,
       canStop: true,
-      text: "7.50",
+      text: "7:30",
       overlay: "none" as const,
     };
     await platform.setTray(status);

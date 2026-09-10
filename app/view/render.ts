@@ -64,10 +64,10 @@ export function render(root: HTMLElement, vm: ViewModel, ui: UiState): void {
 
     // Figure
     const hours = $(root, "hours");
-    if (hours) hours.textContent = vm.decimal;
+    if (hours) hours.textContent = vm.primary;
 
     const hhmm = $(root, "hhmm");
-    if (hhmm) hhmm.textContent = vm.hhmm;
+    if (hhmm) hhmm.textContent = vm.secondary;
 
     // Primary button
     const primary = $(root, "primary");
@@ -91,7 +91,7 @@ export function render(root: HTMLElement, vm: ViewModel, ui: UiState): void {
     // Confirmation text
     const confirmText = $(root, "confirm-text");
     if (confirmText) {
-      confirmText.textContent = `Clear today's ${vm.decimal} hours?`;
+      confirmText.textContent = `Clear today's ${vm.hhmm}?`;
     }
 
     // Note
@@ -127,16 +127,16 @@ export function render(root: HTMLElement, vm: ViewModel, ui: UiState): void {
           const weekName = document.createElement("span");
           weekName.textContent = week.label;
 
-          const weekDec = document.createElement("span");
-          weekDec.className = "num dec";
-          weekDec.textContent = formatDecimalHours(week.seconds);
-          weekDec.title = "Click to copy";
-
           const weekTime = document.createElement("span");
           weekTime.className = "num time";
           weekTime.textContent = formatHHMM(week.seconds);
+          weekTime.title = "Click to copy";
 
-          weekRow.append(weekName, weekDec, weekTime);
+          const weekDec = document.createElement("span");
+          weekDec.className = "num dec";
+          weekDec.textContent = formatDecimalHours(week.seconds);
+
+          weekRow.append(weekName, weekTime, weekDec);
           list.appendChild(weekRow);
 
           // Day rows
@@ -147,16 +147,16 @@ export function render(root: HTMLElement, vm: ViewModel, ui: UiState): void {
             const dayName = document.createElement("span");
             dayName.textContent = day.label;
 
-            const dayDec = document.createElement("span");
-            dayDec.className = "num dec";
-            dayDec.textContent = formatDecimalHours(day.seconds);
-            dayDec.title = "Click to copy";
-
             const dayTime = document.createElement("span");
             dayTime.className = "num time";
             dayTime.textContent = formatHHMM(day.seconds);
+            dayTime.title = "Click to copy";
 
-            dayRow.append(dayName, dayDec, dayTime);
+            const dayDec = document.createElement("span");
+            dayDec.className = "num dec";
+            dayDec.textContent = formatDecimalHours(day.seconds);
+
+            dayRow.append(dayName, dayTime, dayDec);
             list.appendChild(dayRow);
           }
         }

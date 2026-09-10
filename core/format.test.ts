@@ -25,12 +25,13 @@ describe("formatDecimalHours", () => {
 });
 
 describe("formatHHMM", () => {
-  it("DISP-03: formats seconds as zero-padded HH:MM, floored to whole minutes, no cap at 24", () => {
-    expect(formatHHMM(27000)).toBe("07:30");
-    expect(formatHHMM(3599)).toBe("00:59");
+  it("DISP-03: formats seconds as H:MM (no leading zero on hours, two digits on minutes), floored to whole minutes, no cap at 24", () => {
+    expect(formatHHMM(0)).toBe("0:00");
+    expect(formatHHMM(59)).toBe("0:00");
+    expect(formatHHMM(3599)).toBe("0:59");
+    expect(formatHHMM(27000)).toBe("7:30");
     expect(formatHHMM(90000)).toBe("25:00");
-    expect(formatHHMM(-5)).toBe("00:00");
-    expect(formatHHMM(59)).toBe("00:00");
+    expect(formatHHMM(-5)).toBe("0:00");
   });
 });
 

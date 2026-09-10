@@ -18,16 +18,16 @@ export function formatDecimalHours(seconds: number): string {
 }
 
 /**
- * Format seconds as zero-padded HH:MM, floored to whole minutes.
- * Negatives treated as "00:00", no cap at 24 hours.
- * e.g. 27000 -> "07:30", 90000 -> "25:00"
+ * Format seconds as H:MM (no leading zero on hours, two digits on minutes), floored to whole minutes.
+ * Negatives treated as "0:00", no cap at 24 hours.
+ * e.g. 27000 -> "7:30", 90000 -> "25:00"
  */
 export function formatHHMM(seconds: number): string {
   if (seconds < 0) seconds = 0;
   const totalMinutes = Math.floor(seconds / 60);
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  return `${hours}:${String(minutes).padStart(2, "0")}`;
 }
 
 /**

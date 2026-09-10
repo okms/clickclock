@@ -8,7 +8,7 @@ import { MockPlatform } from "./platform/mock";
 import { Timer } from "../core/timer";
 import { parseDoc, serializeDoc, withSettings, history } from "../core/store";
 import { systemClock } from "../core/ports";
-import { formatDecimalHours } from "../core/format";
+import { formatDecimalHours, formatHHMM } from "../core/format";
 import { viewModel } from "./view/model";
 import { render } from "./view/render";
 import type { UiState } from "./view/render";
@@ -148,8 +148,19 @@ import { stateFromResult } from "./view/updates";
     paint();
   });
 
-  // Copy hours figure
+  // Copy hours figure (H:MM)
   root.querySelector('[data-slot="hours"]')?.addEventListener("click", async () => {
+    await platform.copyText(formatHHMM(timer.todaySeconds()));
+    ui.copied = true;
+    paint();
+    setTimeout(() => {
+      ui.copied = false;
+      paint();
+    }, 2000);
+  });
+
+  // Copy hhmm figure (decimal hours)
+  root.querySelector('[data-slot="hhmm"]')?.addEventListener("click", async () => {
     await platform.copyText(formatDecimalHours(timer.todaySeconds()));
     ui.copied = true;
     paint();
@@ -159,11 +170,10 @@ import { stateFromResult } from "./view/updates";
     }, 2000);
   });
 
-  // Copy history/list decimals
+  // Copy history/list cells (both hhmm and decimal)
   document.addEventListener("click", async (e) => {
     const target = e.target as HTMLElement;
     if (
-      target.classList.contains("dec") &&
       target.classList.contains("num") &&
       target.textContent
     ) {

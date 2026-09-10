@@ -13,6 +13,8 @@ export interface ViewModel {
   dateLabel: string;
   decimal: string;
   hhmm: string;
+  primary: string;
+  secondary: string;
   primaryLabel: "Start" | "Pause";
   canClear: boolean;
   note: string;
@@ -79,13 +81,17 @@ export function viewModel(
     note = `Pauses by itself after ${threshold} ${minuteWord} away. Everything stays on this computer.`;
   }
 
+  // Primary and secondary displays
+  const primary = hhmm;
+  const secondary = `${decimal} hours`;
+
   // Tray status
-  const trayText = timer.settings.showTimeInTray ? decimal : null;
+  const trayText = timer.settings.showTimeInTray ? hhmm : null;
   const trayOverlay: "none" | "pause" | "stop" =
     stateKind === "running" ? "none" : stateKind === "paused" ? "pause" : "stop";
 
   const tray: TrayStatus = {
-    tooltip: `${stateWord}, ${decimal} hours (${hhmm})`,
+    tooltip: `${stateWord}, ${hhmm} (${decimal} hours)`,
     running: stateKind === "running",
     canStart: timer.canStart,
     canPause: timer.canPause,
@@ -101,6 +107,8 @@ export function viewModel(
     dateLabel,
     decimal,
     hhmm,
+    primary,
+    secondary,
     primaryLabel,
     canClear,
     note,

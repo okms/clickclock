@@ -25,7 +25,7 @@ describe("viewModel", () => {
       expect(vm.canClear).toBe(false);
     });
 
-    it("TT-03/DISP-01: after start and 27000s shows 'Running', decimal '7.50', hhmm '07:30'", () => {
+    it("TT-03/DISP-01: after start and 27000s shows 'Running', decimal '7.50', hhmm '7:30'", () => {
       const clock = new FakeClock(T0);
       const timer = new Timer(emptyDoc(), clock);
 
@@ -41,7 +41,7 @@ describe("viewModel", () => {
       expect(vm.stateKind).toBe("running");
       expect(vm.primaryLabel).toBe("Pause");
       expect(vm.decimal).toBe("7.50");
-      expect(vm.hhmm).toBe("07:30");
+      expect(vm.hhmm).toBe("7:30");
       expect(vm.canClear).toBe(true);
     });
   });
@@ -139,8 +139,8 @@ describe("viewModel", () => {
     });
   });
 
-  describe("TRAY-02/03: tray status", () => {
-    it("TRAY-02: tray tooltip shows correct format", () => {
+  describe("DISP-02: primary and secondary fields", () => {
+    it("DISP-02: at 27000s, primary equals hhmm ('7:30') and secondary equals decimal hours ('7.50 hours')", () => {
       const clock = new FakeClock(T0);
       const timer = new Timer(emptyDoc(), clock);
 
@@ -149,7 +149,22 @@ describe("viewModel", () => {
 
       const vm = viewModel(timer, clock.now(), {});
 
-      expect(vm.tray.tooltip).toBe("Running, 7.50 hours (07:30)");
+      expect(vm.primary).toBe("7:30");
+      expect(vm.secondary).toBe("7.50 hours");
+    });
+  });
+
+  describe("TRAY-02/03: tray status", () => {
+    it("TRAY-02: tray tooltip shows 'Running, 7:30 (7.50 hours)' format", () => {
+      const clock = new FakeClock(T0);
+      const timer = new Timer(emptyDoc(), clock);
+
+      timer.start();
+      clock.advance(27000 * 1000);
+
+      const vm = viewModel(timer, clock.now(), {});
+
+      expect(vm.tray.tooltip).toBe("Running, 7:30 (7.50 hours)");
     });
 
     it("TRAY-03: tray status reflects running state", () => {
@@ -185,7 +200,7 @@ describe("viewModel", () => {
   });
 
   describe("TRAY-09/TRAY-11: tray text and overlay", () => {
-    it("TRAY-09: running with 27000s and showTimeInTray true -> text '7.50', overlay 'none'", () => {
+    it("TRAY-09: running with 27000s and showTimeInTray true -> text '7:30', overlay 'none'", () => {
       const clock = new FakeClock(T0);
       const timer = new Timer(emptyDoc(), clock);
 
@@ -194,7 +209,7 @@ describe("viewModel", () => {
 
       const vm = viewModel(timer, clock.now(), {});
 
-      expect(vm.tray.text).toBe("7.50");
+      expect(vm.tray.text).toBe("7:30");
       expect(vm.tray.overlay).toBe("none");
     });
 
@@ -211,7 +226,7 @@ describe("viewModel", () => {
       expect(vm.tray.overlay).toBe("pause");
     });
 
-    it("TRAY-11: stopped -> overlay 'stop', text '0.00'", () => {
+    it("TRAY-11: stopped -> overlay 'stop', text '0:00'", () => {
       const clock = new FakeClock(T0);
       const timer = new Timer(emptyDoc(), clock);
 
@@ -222,7 +237,7 @@ describe("viewModel", () => {
       const vm = viewModel(timer, clock.now(), {});
 
       expect(vm.tray.overlay).toBe("stop");
-      expect(vm.tray.text).toBe("0.00");
+      expect(vm.tray.text).toBe("0:00");
     });
 
     it("TRAY-09: with updateSettings({showTimeInTray: false}) -> text null, overlay still set", () => {
