@@ -281,6 +281,8 @@ body {
 }
 
 .hours {
+  user-select: text;
+  -webkit-user-select: text;
   font-size: clamp(76px, 27vw, 104px);
   line-height: 1;
   font-weight: 600;
