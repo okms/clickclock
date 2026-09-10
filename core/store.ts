@@ -93,6 +93,9 @@ export function parseDoc(json: string | null): Doc {
       if (typeof s.launchAtLogin === "boolean") {
         settings.launchAtLogin = s.launchAtLogin;
       }
+      if (typeof s.showTimeInTray === "boolean") {
+        settings.showTimeInTray = s.showTimeInTray;
+      }
     }
 
     // Validate and build days
@@ -164,7 +167,7 @@ export function parseDoc(json: string | null): Doc {
 }
 
 /**
- * SET-05: Update settings with validation. Returns a new Doc, never mutates input.
+ * SET-05/SET-06: Update settings with validation. Returns a new Doc, never mutates input.
  * Invalid settings values are ignored (not applied).
  */
 export function withSettings(doc: Doc, patch: Partial<Settings>): Doc {
@@ -182,6 +185,10 @@ export function withSettings(doc: Doc, patch: Partial<Settings>): Doc {
 
   if ("launchAtLogin" in patch && typeof patch.launchAtLogin === "boolean") {
     settings.launchAtLogin = patch.launchAtLogin;
+  }
+
+  if ("showTimeInTray" in patch && typeof patch.showTimeInTray === "boolean") {
+    settings.showTimeInTray = patch.showTimeInTray;
   }
 
   return {

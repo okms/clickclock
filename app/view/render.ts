@@ -189,5 +189,10 @@ export function render(root: HTMLElement, vm: ViewModel, ui: UiState): void {
       loginHelp.textContent = ui.loginHelp;
       (loginHelp as HTMLElement).hidden = ui.loginHelp === "";
     }
+
+    const traytime = $(root, "traytime");
+    if (traytime) {
+      traytime.setAttribute("aria-checked", String(ui.settings.showTimeInTray));
+    }
   }
 }

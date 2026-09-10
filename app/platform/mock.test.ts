@@ -86,6 +86,8 @@ describe("MockPlatform", () => {
       canStart: false,
       canPause: true,
       canStop: true,
+      text: "7.50",
+      overlay: "none" as const,
     };
     await platform.setTray(status);
     expect(platform.lastTray).toEqual(status);

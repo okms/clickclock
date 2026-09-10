@@ -267,6 +267,52 @@ describe("store: parsing, serialisation, and history", () => {
     expect(updated.settings.launchAtLogin).toBe(false);
   });
 
+  it("SET-06 parseDoc keeps showTimeInTray: false", () => {
+    const json = JSON.stringify({
+      version: 1,
+      settings: {
+        idleThresholdMinutes: 5,
+        autoResume: true,
+        launchAtLogin: true,
+        showTimeInTray: false,
+      },
+      days: {},
+      active: null,
+    });
+    const parsed = parseDoc(json);
+    expect(parsed.settings.showTimeInTray).toBe(false);
+  });
+
+  it("SET-06 parseDoc ignores invalid showTimeInTray (non-boolean) and keeps default true", () => {
+    const json = JSON.stringify({
+      version: 1,
+      settings: {
+        idleThresholdMinutes: 5,
+        autoResume: true,
+        launchAtLogin: true,
+        showTimeInTray: "no",
+      },
+      days: {},
+      active: null,
+    });
+    const parsed = parseDoc(json);
+    expect(parsed.settings.showTimeInTray).toBe(true);
+  });
+
+  it("SET-06 withSettings applies showTimeInTray: false", () => {
+    const doc = emptyDoc();
+    const updated = withSettings(doc, { showTimeInTray: false });
+    expect(updated.settings.showTimeInTray).toBe(false);
+  });
+
+  it("SET-06 serialize/parse round-trips showTimeInTray setting", () => {
+    const doc = emptyDoc();
+    doc.settings.showTimeInTray = false;
+    const serialized = serializeDoc(doc);
+    const parsed = parseDoc(serialized);
+    expect(parsed.settings.showTimeInTray).toBe(false);
+  });
+
   it("HIST-01 history returns weeks with correct grouping and ordering", () => {
     const doc: Doc = emptyDoc();
     // 2026-09-04 is Friday (week 36)

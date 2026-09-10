@@ -24,6 +24,8 @@ export interface Settings {
   autoResume: boolean;
   /** AUTO-01, AUTO-02. Default true. The shell mirrors this to the OS. */
   launchAtLogin: boolean;
+  /** TRAY-10, SET-06. Default true. */
+  showTimeInTray: boolean;
 }
 
 /** The currently counting period. Present only while Running. */
@@ -45,6 +47,7 @@ export const DEFAULT_SETTINGS: Settings = {
   idleThresholdMinutes: 5,
   autoResume: true,
   launchAtLogin: true,
+  showTimeInTray: true,
 };
 
 export const IDLE_THRESHOLD_OPTIONS = [1, 2, 3, 5, 10, 15, 20, 30] as const;

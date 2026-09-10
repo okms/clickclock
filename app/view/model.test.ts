@@ -184,6 +184,62 @@ describe("viewModel", () => {
     });
   });
 
+  describe("TRAY-09/TRAY-11: tray text and overlay", () => {
+    it("TRAY-09: running with 27000s and showTimeInTray true -> text '7.50', overlay 'none'", () => {
+      const clock = new FakeClock(T0);
+      const timer = new Timer(emptyDoc(), clock);
+
+      timer.start();
+      clock.advance(27000 * 1000);
+
+      const vm = viewModel(timer, clock.now(), {});
+
+      expect(vm.tray.text).toBe("7.50");
+      expect(vm.tray.overlay).toBe("none");
+    });
+
+    it("TRAY-11: paused manual -> overlay 'pause'", () => {
+      const clock = new FakeClock(T0);
+      const timer = new Timer(emptyDoc(), clock);
+
+      timer.start();
+      clock.advance(3600 * 1000);
+      timer.pause();
+
+      const vm = viewModel(timer, clock.now(), {});
+
+      expect(vm.tray.overlay).toBe("pause");
+    });
+
+    it("TRAY-11: stopped -> overlay 'stop', text '0.00'", () => {
+      const clock = new FakeClock(T0);
+      const timer = new Timer(emptyDoc(), clock);
+
+      timer.start();
+      clock.advance(3600 * 1000);
+      timer.stop();
+
+      const vm = viewModel(timer, clock.now(), {});
+
+      expect(vm.tray.overlay).toBe("stop");
+      expect(vm.tray.text).toBe("0.00");
+    });
+
+    it("TRAY-09: with updateSettings({showTimeInTray: false}) -> text null, overlay still set", () => {
+      const clock = new FakeClock(T0);
+      const timer = new Timer(emptyDoc(), clock);
+
+      timer.start();
+      clock.advance(3600 * 1000);
+      timer.updateSettings({ showTimeInTray: false });
+
+      const vm = viewModel(timer, clock.now(), {});
+
+      expect(vm.tray.text).toBeNull();
+      expect(vm.tray.overlay).toBe("none");
+    });
+  });
+
   describe("DISP-07: date label", () => {
     it("DISP-07: dateLabel uses formatDayLong", () => {
       const clock = new FakeClock(T0);

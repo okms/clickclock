@@ -210,6 +210,15 @@ import type { UiState } from "./view/render";
     paint();
   });
 
+  // Settings: show-time-in-tray toggle
+  root.querySelector('[data-slot="traytime"]')?.addEventListener("click", (e) => {
+    const btn = e.target as HTMLButtonElement;
+    const checked = btn.getAttribute("aria-checked") === "true";
+    timer.updateSettings({ showTimeInTray: !checked });
+    void save();
+    paint();
+  });
+
   // --- Tray actions ---
   platform.onTrayAction((action) => {
     switch (action) {
@@ -230,6 +239,11 @@ import type { UiState } from "./view/render";
       case "stop":
         ui.confirm = true;
         ui.view = "main";
+        paint();
+        break;
+      case "toggle":
+        timer.toggle();
+        void save();
         paint();
         break;
       case "show":

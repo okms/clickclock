@@ -1,4 +1,4 @@
-export type TrayAction = "start" | "pause" | "stop" | "show" | "quit";
+export type TrayAction = "start" | "pause" | "stop" | "show" | "quit" | "toggle";
 
 export interface TrayStatus {
   tooltip: string; // e.g. "Running, 7.50 hours (07:30)"
@@ -6,6 +6,8 @@ export interface TrayStatus {
   canStart: boolean;
   canPause: boolean;
   canStop: boolean;
+  text: string | null; // e.g. "7.50" when showTimeInTray, null otherwise
+  overlay: "none" | "pause" | "stop"; // indicator shown on the tray icon
 }
 
 export interface Platform {

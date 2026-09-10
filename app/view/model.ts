@@ -80,12 +80,18 @@ export function viewModel(
   }
 
   // Tray status
+  const trayText = timer.settings.showTimeInTray ? decimal : null;
+  const trayOverlay: "none" | "pause" | "stop" =
+    stateKind === "running" ? "none" : stateKind === "paused" ? "pause" : "stop";
+
   const tray: TrayStatus = {
     tooltip: `${stateWord}, ${decimal} hours (${hhmm})`,
     running: stateKind === "running",
     canStart: timer.canStart,
     canPause: timer.canPause,
     canStop: timer.canStop,
+    text: trayText,
+    overlay: trayOverlay,
   };
 
   return {

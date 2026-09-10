@@ -109,6 +109,8 @@ describe("TauriPlatform", () => {
       canStart: false,
       canPause: true,
       canStop: true,
+      text: "7.50",
+      overlay: "none",
     });
     expect(invokeMock).toHaveBeenCalledWith("set_tray", {
       tooltip: "Running, 7.50 hours (07:30)",
@@ -116,6 +118,31 @@ describe("TauriPlatform", () => {
       canStart: false,
       canPause: true,
       canStop: true,
+      text: "7.50",
+      overlay: "none",
+    });
+  });
+
+  it("TRAY-09: setTray includes text and overlay in the invoke call", async () => {
+    invokeMock.mockResolvedValue(undefined);
+    const platform = await TauriPlatform.create();
+    await platform.setTray({
+      tooltip: "Paused, 3.50 hours (03:30)",
+      running: false,
+      canStart: true,
+      canPause: false,
+      canStop: false,
+      text: null,
+      overlay: "pause",
+    });
+    expect(invokeMock).toHaveBeenCalledWith("set_tray", {
+      tooltip: "Paused, 3.50 hours (03:30)",
+      running: false,
+      canStart: true,
+      canPause: false,
+      canStop: false,
+      text: null,
+      overlay: "pause",
     });
   });
 
@@ -143,6 +170,23 @@ describe("TauriPlatform", () => {
     unsubscribe();
     trayActionCallback!({ payload: "start" });
     expect(handler).not.toHaveBeenCalled();
+  });
+
+  it("TRAY-08: a tray-action event with payload \"toggle\" reaches a handler", async () => {
+    let trayActionCallback: ((event: { payload: string }) => void) | undefined;
+    listenMock.mockImplementation(async (eventName: string, cb: (event: { payload: string }) => void) => {
+      if (eventName === "tray-action") {
+        trayActionCallback = cb;
+      }
+      return () => {};
+    });
+    const platform = await TauriPlatform.create();
+    const handler = vi.fn();
+    platform.onTrayAction(handler);
+
+    expect(trayActionCallback).toBeDefined();
+    trayActionCallback!({ payload: "toggle" });
+    expect(handler).toHaveBeenCalledWith("toggle");
   });
 
   it("TRAY-06: a window-hidden event reaches a handler", async () => {

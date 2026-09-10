@@ -5,7 +5,7 @@ import { disable, enable, isEnabled } from "@tauri-apps/plugin-autostart";
 
 import type { Platform, TrayAction, TrayStatus } from "./platform";
 
-const TRAY_ACTIONS: ReadonlySet<string> = new Set(["start", "pause", "stop", "show"]);
+const TRAY_ACTIONS: ReadonlySet<string> = new Set(["start", "pause", "stop", "show", "toggle"]);
 
 /**
  * Real Platform adapter for the Tauri 2 shell. Talks to the Rust commands
@@ -89,6 +89,8 @@ export class TauriPlatform implements Platform {
       canStart: status.canStart,
       canPause: status.canPause,
       canStop: status.canStop,
+      text: status.text,
+      overlay: status.overlay,
     });
   }
 
