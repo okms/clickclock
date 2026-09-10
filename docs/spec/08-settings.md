@@ -12,7 +12,7 @@ between 1 and 30 minutes. Default 5 minutes.
 The user should be able to turn automatic resume (`IDLE-07`) on or off. Default on.
 
 ### SET-03 Launch at login — Baseline
-See `AUTO-01`. This is the only setting in the original product.
+See `AUTO-01`. This is the only setting in the baseline.
 
 ### SET-04 Appearance follows the system — Accepted
 The product should follow the computer's light or dark appearance automatically. This is

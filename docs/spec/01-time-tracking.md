@@ -35,7 +35,7 @@ its current meaning obvious (label and appearance) at all times.
 The user must be able to stop tracking. Stopping ends counting **and resets today's total
 to zero**. Stop is unavailable when there is nothing to clear (Stopped with a zero total).
 
-*Rationale.* In the original product "stop" doubles as "clear today". It is the only
+*Rationale.* In the baseline behaviour "stop" doubles as "clear today". It is the only
 destructive action in the product.
 
 ### TT-05 Stop asks or offers a way back — Accepted

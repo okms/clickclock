@@ -17,7 +17,7 @@ number.
 One bold element: the decimal-hours figure. Everything around it is disciplined and small.
 
 Rejected on purpose: cards and panels, a progress ring, traffic-light buttons, all-caps
-labels, decorative gradients, a monospace face for data. The original's green/yellow/red
+labels, decorative gradients, a monospace face for data. The baseline's green/yellow/red
 buttons are replaced by colour on the state indicator only; the buttons themselves are
 ink-on-paper.
 

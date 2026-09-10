@@ -1,6 +1,6 @@
 # Architecture
 
-How Consultant Timer is built, why, and what could go wrong. The feature set is defined in
+How ClickClock is built, why, and what could go wrong. The feature set is defined in
 `../spec/`; this document never redefines behaviour, it only decides how to deliver it.
 
 Decisions are recorded as ADRs in `decisions/`. This document is the readable summary.
@@ -22,7 +22,7 @@ tool") and the spec's non-functional requirements:
    because the hard bugs (midnight, sleep, idle removal) are all about time.
 4. **Local-only, small, quiet.** `NF-01`, `NF-02`, `NF-07`.
 5. **Cross-platform enough.** macOS and Windows (`NF-05`). The owner works on macOS; the
-   original ran on Windows.
+   baseline timer ran on Windows.
 
 ---
 
@@ -42,7 +42,7 @@ tool") and the spec's non-functional requirements:
 | Fits `NF-07` footprint | Yes | No | Yes | Yes | n/a |
 
 E is out immediately: a web page cannot see system idle time or live in the tray, and
-those are the product. A is what the original did; it is small and fast but every feature
+those are the product. A is what the baseline timer did; it is small and fast but every feature
 is OS code, which is exactly what cheap agents get wrong and what makes the tool
 inflexible. D has the weakest tray story. That leaves B and C.
 
@@ -120,7 +120,7 @@ the total wrong; it can only make the display late.
 
 ### 3.2 Data model (ADR-0003)
 
-One JSON file, `consultant-timer.json`, in the per-user app data directory:
+One JSON file, `clickclock.json`, in the per-user app data directory:
 
 ```json
 {
@@ -145,7 +145,7 @@ One JSON file, `consultant-timer.json`, in the per-user app data directory:
   `Paused` (`TT-08`, `TT-11`, `PERS-04`).
 - Saving: on every state transition and every 30 s while Running. Writes go to a
   temporary file then rename over the old one (`PERS-04`).
-- `version` enables migrations. Importing the original product's `history.json` (`PERS-07`,
+- `version` enables migrations. Importing the earlier timer's `history.json` (`PERS-07`,
   deferred) is a one-function migration: each `days[date]` float becomes one synthetic
   period.
 
@@ -201,14 +201,14 @@ Written before any code exists so that the risks are on record.
 | R4 | If the window is *destroyed* rather than hidden, the webview and the timer die with it. | Medium | High | The shell never destroys the window except on Quit. Until `TRAY-06` is accepted, close means quit (Baseline), which is at least explicit. Recommend accepting `TRAY-06`. |
 | R5 | Sleep/wake: no reliable suspend event reaches the webview. | High | Medium | Not needed: the gap rule (`TT-11`) detects the sleep from the tick timestamps. Idle time reported by the OS after wake is also large, which triggers the same path. |
 | R6 | Autostart in development mode points at the dev binary, not the bundled app. | Certain in dev | Low | Only test `AUTO-*` against a bundled build; say so in the milestone. |
-| R7 | Unsigned app: Gatekeeper on macOS and SmartScreen on Windows warn on first launch. | Certain | Low for a personal tool | Document the right-click-open / "more info" path in README. Ad-hoc signing on macOS removes the worst of it. Same situation as the original. |
+| R7 | Unsigned app: Gatekeeper on macOS and SmartScreen on Windows warn on first launch. | Certain | Low for a personal tool | Document the right-click-open / "more info" path in README. Ad-hoc signing on macOS removes the worst of it. Same situation as any unsigned personal tool. |
 | R8 | Two sources of truth for tray state (Rust menu vs. TS state). | Medium | Low | Rust holds no state. Every TS state change calls `set_tray`; Rust only renders what it is told. |
 | R9 | Local date logic (rollover, week grouping) is easy to get wrong across DST. | Medium | Medium | All date math lives in `core/format.ts` and `core/timer.ts` with fake-clock tests around DST transitions and midnight. Timestamps stored as epoch ms. |
 | R10 | Concurrent writers to the JSON file (two instances). | Low | High | `tauri-plugin-single-instance` (`TRAY-07`, Proposed but cheap; recommend accepting). Atomic rename means the worst case is a lost heartbeat, not a corrupt file. |
 
 ### 4.2 What this approach gives up
 
-- **Size versus the original.** ~10 MB and ~50 MB RAM instead of 2 MB and ~10 MB. Within
+- **Size versus the baseline timer.** ~10 MB and ~50 MB RAM instead of 2 MB and ~10 MB. Within
   `NF-07`. Accepted.
 - **Two languages.** A small amount of Rust in a mostly TypeScript project. Bounded by
   design (3.4).
@@ -221,7 +221,7 @@ Written before any code exists so that the risks are on record.
 - History (`HIST`): the data is already per-period; the view is a list.
 - Configurable threshold and auto-resume (`SET`): settings already in the document.
 - Manual adjustments (`TT-12`): one field per day, already in the schema.
-- Import of the original's data (`PERS-07`): a pure function over JSON.
+- Import of the earlier timer's data (`PERS-07`): a pure function over JSON.
 - Running the UI in a browser for design and review with no native build at all.
 - Replacing the shell (Electron, or a native Swift menu-bar app later) without touching the
   timer.

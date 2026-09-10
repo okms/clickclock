@@ -30,7 +30,7 @@ read without hovering.
 Closing the main view should hide it and leave the product running in the tray. Quitting
 is an explicit action (`TRAY-03`). The product should say so the first time it happens.
 
-*Rationale.* The original exits when its window is closed, which silently stops
+*Rationale.* The baseline exits when its window is closed, which silently stops
 tracking. For a tool that is supposed to run all day this is a trap.
 
 ### TRAY-07 Single instance — Accepted

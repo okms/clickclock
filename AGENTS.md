@@ -2,7 +2,7 @@
 
 Operating manual for AI agents working in this repository. Humans should read it too.
 
-Consultant Timer is a **personal, local-only daily work timer** for one consultant. It shows
+ClickClock is a **personal, local-only daily work timer** for one consultant. It shows
 today's worked time as decimal hours and hh:mm, pauses itself when the computer is idle,
 and lives in the system tray. It is not a timesheet platform and it is never shared between
 people. See `docs/spec/` for what it does and `docs/design/` for how we build it.
@@ -97,8 +97,13 @@ checklist in the brief instead, and the subagent reports which items it verified
 
 ## 3. Git discipline
 
-- **Git is local to this folder.** There is no remote. Never add one, never push, never
-  create pull requests, never run `gh`.
+- **One remote, `origin`, a private GitHub repository.** Work happens on `main` and is
+  pushed there after each reviewed commit or batch. No pull requests are required for a
+  single-owner repository; do not open any unless the owner asks.
+- **Releases are tags.** Pushing a `v*` tag runs `.github/workflows/release.yml`, which
+  builds macOS and Windows bundles and publishes a GitHub Release. Bump the version in
+  `package.json`, `src-tauri/tauri.conf.json` and `src-tauri/Cargo.toml` in one commit
+  before tagging. Never move or delete a published tag.
 - **Commit often and atomically.** One logical change per commit. Commit after every
   completed task, after every reviewed subagent diff, and after every doc change.
 - A behaviour change and its spec update belong in the **same** commit. Unrelated changes
@@ -110,7 +115,7 @@ checklist in the brief instead, and the subagent reports which items it verified
 - The body references requirement IDs touched (`Implements TT-01, TT-02`).
 - Commits made by an agent end with a `Co-Authored-By:` trailer naming the model that did
   the work, for example `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`.
-- Never rewrite history on `main`. Never force anything.
+- Never rewrite history on `main`. Never force-push.
 - Work happens on `main` unless an experiment is genuinely disposable; then use a branch
   and delete it afterwards.
 
@@ -149,6 +154,7 @@ checklist in the brief instead, and the subagent reports which items it verified
 ## 6. Repository map
 
 ```
+.github/workflows/        ci.yml (tests on every push), release.yml (bundles on v* tags)
 AGENTS.md                 this file
 CLAUDE.md                 imports this file for Claude Code
 README.md                 human-facing overview
@@ -172,5 +178,5 @@ and described in `docs/design/architecture.md` when they appear.
 - Turning the product into a timesheet, project or invoicing tool. See `docs/spec/99-out-of-scope.md`.
 - Implementing anything with status `Proposed` or `Deferred`.
 - Letting a subagent edit `docs/spec/`, `docs/design/`, `AGENTS.md`, or commit.
-- Adding a git remote or pushing.
-- Leaving work uncommitted at the end of a session.
+- Force-pushing, or pushing to any remote other than `origin`.
+- Leaving work uncommitted or unpushed at the end of a session.

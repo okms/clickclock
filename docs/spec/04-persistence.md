@@ -29,6 +29,6 @@ The product should store when each counted period started and ended, not only th
 sum, so that history (`HIST`) and later corrections are possible. The daily total remains
 derivable from the periods plus any manual adjustments (`TT-12`).
 
-### PERS-07 Import from the original product — Deferred
-The product may be able to import the daily totals of the original Consultant Timer's data
-file so the user does not lose their history.
+### PERS-07 Import from the earlier timer — Deferred
+The product may be able to import the daily totals from the data file of the timer the owner
+used before ClickClock, so no history is lost.

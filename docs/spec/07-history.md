@@ -1,6 +1,6 @@
 # HIST: History
 
-HIST-01 to HIST-03 are **Accepted** for the first version. The original product stores previous
+HIST-01 to HIST-03 are **Accepted** for the first version. The baseline stores previous
 days but offers no way to see them.
 
 ## Requirements

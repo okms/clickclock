@@ -1,8 +1,8 @@
-# Consultant Timer: feature specification
+# ClickClock: feature specification
 
 ## Purpose
 
-Consultant Timer answers one question for one person, many times a day:
+ClickClock answers one question for one person, many times a day:
 **how much have I worked today?**
 
 It is a personal daily work timer. The user starts it in the morning, it counts while they
@@ -13,11 +13,11 @@ It is deliberately not a timesheet, project tracker, or invoicing tool.
 
 ## Provenance
 
-This specification was derived by reviewing the behaviour of the original
-[Consultant Timer](https://github.com/sirarsalih/consultant-timer) by Sirar Salih
-(MIT, reviewed at commit `703e90c`, 2026-09-09). Requirements that describe that
-behaviour carry status **Baseline**. Everything else is new and carries status
-**Proposed** until accepted.
+The baseline feature set was written down by observing a simple Windows-only daily timer
+the owner had been using before this project. ClickClock is an independent product with its
+own code, design and name and is not affiliated with that tool. Requirements that describe
+the observed baseline behaviour carry status **Baseline**. Everything else is new and carries
+status **Proposed** until accepted.
 
 The specification describes *what* the product does, never *how*. Words like "window",
 "button", and "tray" are used in their everyday sense and do not prescribe technology.
@@ -37,7 +37,7 @@ Each requirement has:
   IDs are never reused or renumbered. A withdrawn requirement keeps its ID with status
   `Withdrawn`.
 - a **status**:
-  - `Baseline`: behaviour of the original product, kept.
+  - `Baseline`: behaviour of the baseline, kept.
   - `Proposed`: suggested for this rewrite, not yet approved. Not to be implemented.
   - `Accepted`: approved for implementation.
   - `Deferred`: approved in principle, explicitly not now.

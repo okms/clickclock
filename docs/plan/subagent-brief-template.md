@@ -3,7 +3,7 @@
 Copy this into the `Agent` prompt. Fill every section; delete nothing.
 
 ```
-You are implementing one task in the Consultant Timer repository at <ABSOLUTE PATH>.
+You are implementing one task in the ClickClock repository at <ABSOLUTE PATH>.
 Read AGENTS.md first and obey it. You do not commit. You do not edit docs/spec, docs/design,
 AGENTS.md, or any file outside the "Files you may change" list.
 

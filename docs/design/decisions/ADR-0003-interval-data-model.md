@@ -5,14 +5,14 @@
 
 ## Context
 
-The original stored one floating-point number of seconds per day. That makes history,
+The baseline timer stored one floating-point number of seconds per day. That makes history,
 corrections, and audit impossible and forces the timer to mutate a running sum every
 second. Spec requirements `PERS-04`, `PERS-05`, `PERS-06`, `TT-11`, `TT-12`, and the whole
 `HIST` area want more.
 
 ## Decision
 
-Store a single JSON document (`consultant-timer.json`) in the per-user app data directory:
+Store a single JSON document (`clickclock.json`) in the per-user app data directory:
 
 - `settings`
 - `days[YYYY-MM-DD] = { periods: [{start, end}], adjustmentSeconds }`
@@ -31,4 +31,4 @@ Schema carries `version: 1`; migrations are pure functions `Doc(n) -> Doc(n+1)`.
   `lastSeen`.
 - The file is readable and hand-editable (`PERS-05`).
 - Slightly more data than one float per day; negligible for one user.
-- Importing the original's `history.json` is a one-function migration (deferred, `PERS-07`).
+- Importing the earlier timer's `history.json` is a one-function migration (deferred, `PERS-07`).
