@@ -1,6 +1,6 @@
 # HIST: History
 
-All requirements in this area are **Proposed**. The original product stores previous
+HIST-01 to HIST-03 are **Accepted** for the first version. The original product stores previous
 days but offers no way to see them.
 
 ## Requirements

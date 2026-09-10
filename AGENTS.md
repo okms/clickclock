@@ -64,6 +64,21 @@ Rules for keeping subagents cheap:
 
 Use `docs/plan/subagent-brief-template.md` for every brief.
 
+### Red-green TDD is mandatory
+
+Every implementation brief follows red-green-refactor, and the subagent's report must
+show it:
+
+1. **Red.** Write the tests first, named after the spec IDs they cover
+   (`it("TT-04 stop clears today's total", ...)`). Run them. Paste the failing output.
+2. **Green.** Write the smallest implementation that makes them pass. Run them. Paste the
+   passing output.
+3. **Refactor.** Tidy without changing behaviour. Run them again.
+
+A diff that arrives with tests and implementation but no evidence of the red run is sent
+back. Behaviour that cannot be unit-tested (a tray menu, a native window) gets a manual
+checklist in the brief instead, and the subagent reports which items it verified.
+
 ---
 
 ## 2. The specification is the source of truth

@@ -73,3 +73,11 @@ Each requirement has:
 - **Idle**: the user has produced no keyboard or pointer input on the computer for a
   period of time.
 - **Idle threshold**: the idle duration after which the product treats the user as absent.
+
+## Decision log
+
+- 2026-09-10: Owner granted full autonomy on technical and design decisions within this
+  specification. The first version implements every `Baseline` and `Accepted` requirement.
+  Accepted for v1: TT-05, TT-13, DISP-07, DISP-08, IDLE-07, IDLE-08, PERS-05, PERS-06,
+  TRAY-06, TRAY-07, HIST-01..03, SET-01, SET-02, SET-04, NF-05..07. Deferred: TT-12,
+  TRAY-05, HIST-04, HIST-05, PERS-07.

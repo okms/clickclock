@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consultant Timer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..900&display=swap" rel="stylesheet">
+<style>
+/* ------------------------------------------------------------------
+   Consultant Timer prototype
+   Tokens and components are the contract in docs/design/ui.md.
+   The page shows two app frames (light, dark) driven by one state,
+   plus a prototype control strip that is not part of the product.
+------------------------------------------------------------------- */
+
+:root {
+  --stage: #E4E6E2;
+  --stage-ink: #171B1E;
+  --stage-ink-2: #6A7278;
+  --stage-line: #C9CDC7;
+  --font: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --stage: #0F1316; --stage-ink: #E8ECEA; --stage-ink-2: #8C959B; --stage-line: #262D31;
+  }
+}
+:root[data-theme="dark"] {
+  --stage: #0F1316; --stage-ink: #E8ECEA; --stage-ink-2: #8C959B; --stage-line: #262D31;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--stage);
+  color: var(--stage-ink);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Stage layout ---------------------------------------------------- */
+.stage {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px 64px;
+}
+.stage-head { margin-bottom: 28px; max-width: 60ch; }
+.stage-head h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 6px; }
+.stage-head p  { margin: 0; color: var(--stage-ink-2); font-size: 14px; }
+.frames {
+  display: flex; gap: 32px; flex-wrap: wrap; justify-content: center;
+}
+.frame-wrap { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.frame-label { font-size: 13px; color: var(--stage-ink-2); }
+
+/* Prototype controls (not part of the product) --------------------- */
+.controls {
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid var(--stage-line);
+  display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center;
+  font-size: 13px; color: var(--stage-ink-2);
+}
+.controls .group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-right: 12px; }
+.controls .group > span { margin-right: 4px; }
+.controls button {
+  font: inherit; font-size: 13px; cursor: pointer;
+  padding: 5px 10px; border-radius: 8px;
+  border: 1px solid var(--stage-line); background: transparent; color: var(--stage-ink);
+}
+.controls button:hover { border-color: var(--stage-ink-2); }
+.controls button[aria-pressed="true"] { background: var(--stage-ink); color: var(--stage); border-color: var(--stage-ink); }
+.controls button:focus-visible { outline: 2px solid #2F6FE4; outline-offset: 2px; }
+
+/* ------------------------------------------------------------------
+   THE APP
+------------------------------------------------------------------- */
+.app {
+  --paper: #F2F3F0; --ink: #171B1E; --ink-2: #6A7278; --line: #D6DAD5; --raise: #FFFFFF;
+  --working: #1E7A55; --away: #A8731A; --clear: #9E3B32; --focus: #2F6FE4;
+  color-scheme: light;
+}
+.app[data-theme="dark"] {
+  --paper: #151A1D; --ink: #E8ECEA; --ink-2: #8C959B; --line: #2B3236; --raise: #1D2428;
+  --working: #4CBE8A; --away: #D9A441; --clear: #D96C60; --focus: #6EA0FF;
+  color-scheme: dark;
+}
+
+.app {
+  width: 380px; height: 520px;
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font); font-size: 15px; line-height: 1.4;
+  padding: 24px 28px 28px;
+  display: flex; flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--stage-line);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 420px) { .app { width: min(380px, 100vw - 32px); height: auto; min-height: 520px; } }
+
+.app button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.app button:focus-visible, .app select:focus-visible, .app [role="switch"]:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 10px;
+}
+
+/* Top row */
+.top { display: flex; align-items: flex-start; justify-content: space-between; min-height: 42px; }
+.state { display: flex; flex-direction: column; gap: 2px; }
+.state-line { display: flex; align-items: center; gap: 9px; font-weight: 600; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-2); flex: none; }
+.app[data-state="running"] .dot  { background: var(--working); animation: pulse 2s ease-in-out infinite; }
+.app[data-state="running"] .state-word { color: var(--working); }
+.app[data-state="paused"]  .dot  { background: var(--away); }
+.app[data-state="paused"]  .state-word { color: var(--away); }
+.app[data-state="stopped"] .state-word { color: var(--ink-2); }
+.state-why { font-size: 13px; color: var(--ink-2); line-height: 1.5; min-height: 0; }
+.state-why:empty { display: none; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+
+.icons { display: flex; gap: 2px; margin: -6px -8px 0 0; }
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: var(--ink-2);
+}
+.icon-btn:hover { background: var(--raise); color: var(--ink); }
+.icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+.back { font-size: 15px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); border-radius: 8px; padding: 2px 6px; margin-left: -6px; }
+.back:hover { color: var(--ink); background: var(--raise); }
+.back svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Views */
+.view { display: none; flex: 1; flex-direction: column; min-height: 0; }
+.view.is-active { display: flex; }
+
+/* Main view */
+.date { margin: 22px 0 0; font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+.figure { margin-top: 10px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.hours {
+  font-size: clamp(76px, 27vw, 104px); line-height: 1; font-weight: 600; letter-spacing: -0.035em;
+  cursor: copy; border-radius: 6px; margin-left: -4px; padding: 0 4px;
+  transition: color 160ms ease;
+}
+.hours:hover { background: var(--raise); }
+.app[data-state="paused"] .hours { color: var(--ink); }
+.app[data-state="stopped"] .hours { color: var(--ink-2); }
+.unit { font-size: 15px; color: var(--ink-2); }
+.copied { font-size: 13px; color: var(--ink-2); opacity: 0; transition: opacity 160ms ease; }
+.copied.is-on { opacity: 1; }
+.hhmm { margin: 8px 0 0; font-size: 26px; line-height: 1.2; letter-spacing: -0.01em; color: var(--ink-2); font-weight: 400; user-select: text; }
+
+.actions { margin-top: auto; }
+.primary {
+  width: 100%; height: 48px; border-radius: 10px; font-weight: 600; font-size: 15px;
+  background: var(--ink); color: var(--paper); border: 1px solid var(--ink);
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.primary:hover { filter: brightness(.94); }
+.app[data-state="running"] .primary { background: transparent; color: var(--ink); border-color: var(--line); }
+.app[data-state="running"] .primary:hover { background: var(--raise); filter: none; }
+.quiet {
+  display: inline-block; margin-top: 12px; padding: 6px 8px; margin-left: -8px; border-radius: 8px;
+  color: var(--ink-2); font-size: 15px;
+}
+.quiet:hover:not(:disabled) { color: var(--ink); background: var(--raise); }
+.quiet:disabled { opacity: .5; cursor: default; }
+
+.confirm { display: none; }
+.confirm.is-on { display: block; }
+.actions.is-confirm .normal { display: none; }
+.confirm p { margin: 0 0 12px; font-weight: 600; }
+.confirm-row { display: flex; align-items: center; gap: 8px; }
+.danger {
+  height: 40px; padding: 0 18px; border-radius: 10px; font-weight: 600;
+  background: var(--clear); color: #fff;
+}
+.danger:hover { filter: brightness(.94); }
+.confirm .quiet { margin: 0; }
+
+.note { margin: 20px 0 0; font-size: 13px; color: var(--ink-2); line-height: 1.5; max-width: 34ch; }
+
+/* History view */
+.section-title { margin: 22px 0 14px; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+.list { margin: 0; padding: 0; list-style: none; overflow: auto; flex: 1; scrollbar-width: thin; }
+.row {
+  display: grid; grid-template-columns: 1fr 64px 56px; gap: 8px; align-items: center;
+  height: 40px; border-top: 1px solid var(--line); font-size: 15px;
+}
+.row.week { font-weight: 600; border-top: 0; margin-top: 8px; }
+.row.week + .row { border-top: 1px solid var(--line); }
+.row:first-child { margin-top: 0; }
+.row .num { text-align: right; }
+.row .num.dec { cursor: copy; border-radius: 6px; padding: 2px 4px; margin-right: -4px; }
+.row .num.dec:hover { background: var(--raise); }
+.row .num.time { color: var(--ink-2); }
+.empty { color: var(--ink-2); font-size: 13px; max-width: 34ch; line-height: 1.5; }
+
+/* Settings view */
+.setting {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: 52px; border-top: 1px solid var(--line);
+}
+.setting:first-of-type { border-top: 0; }
+.setting label { font-size: 15px; }
+.setting .help { display: block; font-size: 13px; color: var(--ink-2); margin-top: 2px; line-height: 1.5; }
+.setting .help:empty { display: none; }
+.select-wrap { position: relative; }
+.app select {
+  appearance: none; -webkit-appearance: none;
+  font: inherit; font-size: 15px; color: var(--ink); background: transparent;
+  border: 1px solid var(--line); border-radius: 10px; padding: 7px 30px 7px 12px; cursor: pointer;
+}
+.app select:hover { background: var(--raise); }
+.select-wrap svg { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; stroke: var(--ink-2); fill: none; stroke-width: 1.8; pointer-events: none; }
+.switch {
+  width: 44px; height: 24px; border-radius: 999px; background: var(--line); position: relative; flex: none;
+  transition: background-color 120ms ease;
+}
+.switch[aria-checked="true"] { background: var(--ink); }
+.switch::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--paper); transition: transform 120ms ease;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent);
+}
+.switch[aria-checked="true"]::after { transform: translateX(20px); }
+.settings-note { margin-top: auto; font-size: 13px; color: var(--ink-2); line-height: 1.5; max-width: 34ch; }
+
+@media (prefers-reduced-motion: reduce) {
+  .app *, .app *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="stage-head">
+    <h1>Consultant Timer</h1>
+    <p>Main view in light and dark. Both frames share one state. Use the strip at the bottom to step through states; it is not part of the product.</p>
+  </div>
+
+  <div class="frames" id="frames"></div>
+
+  <div class="controls" aria-label="Prototype controls">
+    <div class="group"><span>State</span>
+      <button data-act="running">Running</button>
+      <button data-act="paused">Paused</button>
+      <button data-act="idle">Paused, away</button>
+      <button data-act="stopped">Stopped</button>
+    </div>
+    <div class="group"><span>Time</span>
+      <button data-act="t0">0.00</button>
+      <button data-act="t1">1.08</button>
+      <button data-act="t7">7.50</button>
+      <button data-act="t9">9.27</button>
+    </div>
+    <div class="group"><span>View</span>
+      <button data-act="main">Today</button>
+      <button data-act="history">History</button>
+      <button data-act="settings">Settings</button>
+      <button data-act="nohistory">Empty history</button>
+    </div>
+  </div>
+</div>
+
+<template id="app-tpl">
+  <div class="app" data-state="running" data-theme="light" aria-label="Consultant Timer">
+    <header class="top">
+      <div class="state" data-slot="state-header">
+        <div class="state-line"><span class="dot" aria-hidden="true"></span><span class="state-word" aria-live="polite">Running</span></div>
+        <div class="state-why"></div>
+      </div>
+      <button class="back" data-slot="back" hidden>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5"/></svg>Today
+      </button>
+      <div class="icons" data-slot="icons">
+        <button class="icon-btn" data-go="history" aria-label="Previous days" title="Previous days">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+        </button>
+        <button class="icon-btn" data-go="settings" aria-label="Settings" title="Settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h9M17 8h3M4 16h3M11 16h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <section class="view is-active" data-view="main">
+      <p class="date" data-slot="date">Wednesday 10 September</p>
+      <div class="figure">
+        <span class="hours" data-slot="hours" title="Click to copy">7.50</span>
+        <span class="unit">hours</span>
+        <span class="copied" data-slot="copied">Copied</span>
+      </div>
+      <p class="hhmm" data-slot="hhmm">07:30</p>
+
+      <div class="actions" data-slot="actions">
+        <div class="normal">
+          <button class="primary" data-slot="primary">Pause</button>
+          <button class="quiet" data-slot="clear">Clear today</button>
+        </div>
+        <div class="confirm" data-slot="confirm">
+          <p data-slot="confirm-text">Clear today's 7.50 hours?</p>
+          <div class="confirm-row">
+            <button class="danger" data-slot="confirm-yes">Clear</button>
+            <button class="quiet" data-slot="confirm-no">Keep</button>
+          </div>
+        </div>
+        <p class="note" data-slot="note">Pauses by itself after 5 minutes away. Everything stays on this computer.</p>
+      </div>
+    </section>
+
+    <!-- History -->
+    <section class="view" data-view="history">
+      <h2 class="section-title">Previous days</h2>
+      <ul class="list" data-slot="list"></ul>
+    </section>
+
+    <!-- Settings -->
+    <section class="view" data-view="settings">
+      <h2 class="section-title">Settings</h2>
+      <div class="setting">
+        <label for="__thr">Pause after being away for</label>
+        <span class="select-wrap">
+          <select data-slot="threshold" id="__thr">
+            <option>1 minute</option><option>2 minutes</option><option>3 minutes</option>
+            <option selected>5 minutes</option><option>10 minutes</option><option>15 minutes</option>
+            <option>20 minutes</option><option>30 minutes</option>
+          </select>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </span>
+      </div>
+      <div class="setting">
+        <span><label>Resume when I come back</label></span>
+        <button class="switch" role="switch" aria-checked="true" data-slot="autoresume" aria-label="Resume when I come back"></button>
+      </div>
+      <div class="setting">
+        <span><label>Open at login</label><span class="help" data-slot="login-help"></span></span>
+        <button class="switch" role="switch" aria-checked="true" data-slot="login" aria-label="Open at login"></button>
+      </div>
+      <p class="settings-note">Your data is one plain file on this computer. Nothing is sent anywhere.</p>
+    </section>
+  </div>
+</template>
+
+<script>
+(function () {
+  // ---------- shared prototype state ----------
+  const state = {
+    status: 'running',        // running | paused | stopped
+    pauseReason: null,        // manual | idle
+    idleMinutes: 12,
+    seconds: 7.5 * 3600,
+    view: 'main',             // main | history | settings
+    confirm: false,
+    resumedNotice: false,
+    thresholdMin: 5,
+    autoResume: true,
+    login: true,
+    history: true,
+    date: new Date(2026, 8, 10),
+  };
+
+  const HISTORY = [
+    { week: 'This week', days: [['Tue 9 Sep', 8.25], ['Mon 8 Sep', 7.5]] },
+    { week: 'Week 36', days: [['Fri 5 Sep', 7.75], ['Thu 4 Sep', 8.0], ['Wed 3 Sep', 6.5], ['Tue 2 Sep', 8.25], ['Mon 1 Sep', 7.5]] },
+    { week: 'Week 35', days: [['Fri 29 Aug', 5.0], ['Thu 28 Aug', 8.5], ['Wed 27 Aug', 7.75], ['Tue 26 Aug', 8.0], ['Mon 25 Aug', 7.25]] },
+  ];
+
+  const fmtDec = s => (Math.round((s / 3600) * 100) / 100).toFixed(2);
+  const fmtHM  = s => { const m = Math.floor(s / 60); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+  const fmtDate = d => d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  // ---------- build the two frames ----------
+  const tpl = document.getElementById('app-tpl');
+  const framesEl = document.getElementById('frames');
+  const frames = [];
+  for (const theme of ['light', 'dark']) {
+    const wrap = document.createElement('div'); wrap.className = 'frame-wrap';
+    const node = tpl.content.firstElementChild.cloneNode(true);
+    node.dataset.theme = theme;
+    // unique id for the select label association
+    const sel = node.querySelector('select'); sel.id = 'thr-' + theme;
+    node.querySelector('label[for="__thr"]').setAttribute('for', sel.id);
+    const label = document.createElement('div'); label.className = 'frame-label';
+    label.textContent = theme === 'light' ? 'Light' : 'Dark';
+    wrap.append(node, label); framesEl.append(wrap);
+    frames.push(node);
+    wire(node);
+  }
+
+  function $(node, slot) { return node.querySelector('[data-slot="' + slot + '"]'); }
+
+  function wire(node) {
+    $(node, 'primary').addEventListener('click', () => {
+      if (state.status === 'running') { state.status = 'paused'; state.pauseReason = 'manual'; }
+      else { state.status = 'running'; state.pauseReason = null; }
+      state.resumedNotice = false; render();
+    });
+    $(node, 'clear').addEventListener('click', () => { state.confirm = true; render(); });
+    $(node, 'confirm-no').addEventListener('click', () => { state.confirm = false; render(); });
+    $(node, 'confirm-yes').addEventListener('click', () => {
+      state.confirm = false; state.seconds = 0; state.status = 'stopped'; state.pauseReason = null;
+      flashNote('Today cleared'); render();
+    });
+    $(node, 'hours').addEventListener('click', () => copyFlash(node));
+    node.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { state.view = b.dataset.go; render(); }));
+    $(node, 'back').addEventListener('click', () => { state.view = 'main'; render(); });
+    $(node, 'threshold').addEventListener('change', e => { state.thresholdMin = parseInt(e.target.value, 10); render(); });
+    $(node, 'autoresume').addEventListener('click', () => { state.autoResume = !state.autoResume; render(); });
+    $(node, 'login').addEventListener('click', () => { state.login = !state.login; render(); });
+    node.addEventListener('keydown', e => { if (e.key === 'Escape' && state.confirm) { state.confirm = false; render(); } });
+  }
+
+  let noteOverride = null, noteTimer = null;
+  function flashNote(text) {
+    noteOverride = text; clearTimeout(noteTimer);
+    noteTimer = setTimeout(() => { noteOverride = null; render(); }, 2500);
+  }
+  function copyFlash(node) {
+    const text = fmtDec(state.seconds);
+    if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
+    frames.forEach(f => {
+      const c = $(f, 'copied'); c.classList.add('is-on');
+      clearTimeout(c._t); c._t = setTimeout(() => c.classList.remove('is-on'), 1800);
+    });
+  }
+
+  // ---------- render ----------
+  function render() {
+    const dec = fmtDec(state.seconds), hm = fmtHM(state.seconds);
+    for (const node of frames) {
+      node.dataset.state = state.status;
+      node.querySelectorAll('.view').forEach(v => v.classList.toggle('is-active', v.dataset.view === state.view));
+      const onMain = state.view === 'main';
+      $(node, 'state-header').hidden = !onMain;
+      $(node, 'icons').hidden = !onMain;
+      $(node, 'back').hidden = onMain;
+
+      // state row
+      node.querySelector('.state-word').textContent = { running: 'Running', paused: 'Paused', stopped: 'Stopped' }[state.status];
+      let why = '';
+      if (state.status === 'paused' && state.pauseReason === 'idle') why = 'Away for ' + state.idleMinutes + ' minutes, paused by itself';
+      if (state.status === 'running' && state.resumedNotice) why = 'Resumed after being away';
+      node.querySelector('.state-why').textContent = why;
+
+      // figures
+      $(node, 'date').textContent = fmtDate(state.date);
+      $(node, 'hours').textContent = dec;
+      $(node, 'hhmm').textContent = hm;
+
+      // actions
+      $(node, 'primary').textContent = state.status === 'running' ? 'Pause' : 'Start';
+      const clear = $(node, 'clear');
+      clear.disabled = state.status === 'stopped' && state.seconds === 0;
+      $(node, 'actions').classList.toggle('is-confirm', state.confirm);
+      $(node, 'confirm').classList.toggle('is-on', state.confirm);
+      $(node, 'confirm-text').textContent = "Clear today's " + dec + ' hours?';
+      $(node, 'note').textContent = noteOverride ||
+        ('Pauses by itself after ' + state.thresholdMin + ' minute' + (state.thresholdMin === 1 ? '' : 's') + ' away. Everything stays on this computer.');
+
+      // history
+      const list = $(node, 'list'); list.innerHTML = '';
+      if (!state.history) {
+        const li = document.createElement('li'); li.className = 'empty';
+        li.textContent = 'Nothing yet. Previous days appear here once you have worked a full day.'; list.append(li);
+      } else {
+        for (const g of HISTORY) {
+          const total = g.days.reduce((a, d) => a + d[1], 0);
+          list.append(row(g.week, total, true));
+          for (const [name, h] of g.days) list.append(row(name, h, false));
+        }
+      }
+
+      // settings
+      const sel = $(node, 'threshold');
+      [...sel.options].forEach(o => { o.selected = parseInt(o.value, 10) === state.thresholdMin; });
+      $(node, 'autoresume').setAttribute('aria-checked', String(state.autoResume));
+      $(node, 'login').setAttribute('aria-checked', String(state.login));
+    }
+  }
+  function row(name, hours, isWeek) {
+    const li = document.createElement('li'); li.className = 'row' + (isWeek ? ' week' : '');
+    const n = document.createElement('span'); n.textContent = name;
+    const d = document.createElement('span'); d.className = 'num dec'; d.textContent = hours.toFixed(2); d.title = 'Click to copy';
+    d.addEventListener('click', () => { if (navigator.clipboard) navigator.clipboard.writeText(d.textContent).catch(() => {}); });
+    const t = document.createElement('span'); t.className = 'num time'; t.textContent = fmtHM(hours * 3600);
+    li.append(n, d, t); return li;
+  }
+
+  // ---------- ticking ----------
+  setInterval(() => { if (state.status === 'running') { state.seconds += 1; render(); } }, 1000);
+
+  // ---------- prototype controls ----------
+  document.querySelectorAll('.controls button').forEach(b => b.addEventListener('click', () => {
+    const a = b.dataset.act;
+    if (a === 'running') { state.status = 'running'; state.pauseReason = null; state.resumedNotice = false; }
+    if (a === 'paused')  { state.status = 'paused';  state.pauseReason = 'manual'; }
+    if (a === 'idle')    { state.status = 'paused';  state.pauseReason = 'idle'; }
+    if (a === 'stopped') { state.status = 'stopped'; state.pauseReason = null; state.seconds = 0; }
+    if (a === 't0') state.seconds = 0;
+    if (a === 't1') state.seconds = 1.08 * 3600;
+    if (a === 't7') state.seconds = 7.5 * 3600;
+    if (a === 't9') state.seconds = 9.27 * 3600;
+    if (a === 'main' || a === 'history' || a === 'settings') { state.view = a; state.history = true; }
+    if (a === 'nohistory') { state.view = 'history'; state.history = false; }
+    state.confirm = false;
+    render(); syncPressed();
+  }));
+  function syncPressed() {
+    document.querySelectorAll('.controls button').forEach(b => {
+      const a = b.dataset.act;
+      const on = (a === state.status && !(a === 'paused' && state.pauseReason === 'idle')) ||
+                 (a === 'idle' && state.status === 'paused' && state.pauseReason === 'idle') ||
+                 (a === state.view && state.history) || (a === 'nohistory' && state.view === 'history' && !state.history);
+      b.setAttribute('aria-pressed', String(on));
+    });
+  }
+  render(); syncPressed();
+})();
+</script>
+</body>
+</html>
