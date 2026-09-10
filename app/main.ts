@@ -264,7 +264,11 @@ import type { UiState } from "./view/render";
   });
 
   // --- Main loop ---
-  setInterval(async () => {
+  // Driven by the host's tick (TT-09): a Rust thread emits "tick" once per
+  // second even while the window is hidden and WebKit would otherwise
+  // throttle a page-owned setInterval (TRAY-09).
+  let busy = false;
+  async function loop(): Promise<void> {
     const idle = await platform.idleSeconds();
     const r = timer.tick(idle);
 
@@ -276,7 +280,15 @@ import type { UiState } from "./view/render";
     }
 
     paint();
-  }, 1000);
+  }
+
+  platform.onTick(() => {
+    if (busy) return;
+    busy = true;
+    void loop().finally(() => {
+      busy = false;
+    });
+  });
 
   // --- Dev controls (MockPlatform only) ---
   if (platform instanceof MockPlatform) {

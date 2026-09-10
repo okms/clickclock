@@ -205,4 +205,25 @@ describe("TauriPlatform", () => {
     windowHiddenCallback!();
     expect(handler).toHaveBeenCalled();
   });
+
+  it("TT-09: a tick event reaches an onTick handler; unsubscribe stops delivery", async () => {
+    let tickCallback: (() => void) | undefined;
+    listenMock.mockImplementation(async (eventName: string, cb: () => void) => {
+      if (eventName === "tick") {
+        tickCallback = cb;
+      }
+      return () => {};
+    });
+    const platform = await TauriPlatform.create();
+    const handler = vi.fn();
+    const unsubscribe = platform.onTick(handler);
+
+    expect(tickCallback).toBeDefined();
+    tickCallback!();
+    expect(handler).toHaveBeenCalledTimes(1);
+
+    unsubscribe();
+    tickCallback!();
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
 });

@@ -49,6 +49,8 @@ export class MockPlatform implements Platform {
   public readonly copied: string[] = [];
   private trayHandlers: Set<(action: TrayAction) => void> = new Set();
   private windowHiddenHandlers: Set<() => void> = new Set();
+  private tickHandlers: Set<() => void> = new Set();
+  private tickIntervals: Map<() => void, ReturnType<typeof setInterval>> = new Map();
 
   constructor(opts?: MockOptions) {
     // Determine storage
@@ -125,6 +127,20 @@ export class MockPlatform implements Platform {
     // No-op
   }
 
+  onTick(handler: () => void): () => void {
+    this.tickHandlers.add(handler);
+    const interval = setInterval(handler, 1000);
+    this.tickIntervals.set(handler, interval);
+    return () => {
+      this.tickHandlers.delete(handler);
+      const existing = this.tickIntervals.get(handler);
+      if (existing) {
+        clearInterval(existing);
+        this.tickIntervals.delete(handler);
+      }
+    };
+  }
+
   // Test/demo controls
   simulateIdle(seconds: number): void {
     this.idleValue = seconds;
@@ -138,6 +154,13 @@ export class MockPlatform implements Platform {
 
   fireWindowHidden(): void {
     for (const handler of this.windowHiddenHandlers) {
+      handler();
+    }
+  }
+
+  /** Test control: synchronously call all registered onTick handlers. */
+  fireTick(): void {
+    for (const handler of this.tickHandlers) {
       handler();
     }
   }

@@ -16,8 +16,10 @@ export class TauriPlatform implements Platform {
   private idleWarned = false;
   private trayHandlers: Set<(action: TrayAction) => void> = new Set();
   private windowHiddenHandlers: Set<() => void> = new Set();
+  private tickHandlers: Set<() => void> = new Set();
   private unlistenTrayAction: UnlistenFn | undefined;
   private unlistenWindowHidden: UnlistenFn | undefined;
+  private unlistenTick: UnlistenFn | undefined;
 
   private constructor() {}
 
@@ -38,6 +40,12 @@ export class TauriPlatform implements Platform {
 
     platform.unlistenWindowHidden = await listen("window-hidden", () => {
       for (const handler of platform.windowHiddenHandlers) {
+        handler();
+      }
+    });
+
+    platform.unlistenTick = await listen("tick", () => {
+      for (const handler of platform.tickHandlers) {
         handler();
       }
     });
@@ -105,6 +113,13 @@ export class TauriPlatform implements Platform {
     this.windowHiddenHandlers.add(handler);
     return () => {
       this.windowHiddenHandlers.delete(handler);
+    };
+  }
+
+  onTick(handler: () => void): () => void {
+    this.tickHandlers.add(handler);
+    return () => {
+      this.tickHandlers.delete(handler);
     };
   }
 

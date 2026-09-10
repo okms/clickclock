@@ -123,4 +123,24 @@ describe("MockPlatform", () => {
     await platform.copyText("hello");
     expect(platform.copied).toEqual(["7.50", "hello"]);
   });
+
+  it("TT-09: onTick handler is called by fireTick()", () => {
+    const calls: number[] = [];
+    platform.onTick(() => {
+      calls.push(1);
+    });
+    platform.fireTick();
+    expect(calls).toEqual([1]);
+  });
+
+  it("TT-09: onTick handler is not called after unsubscribe", () => {
+    const calls: number[] = [];
+    const unsubscribe = platform.onTick(() => {
+      calls.push(1);
+    });
+    platform.fireTick();
+    unsubscribe();
+    platform.fireTick();
+    expect(calls).toEqual([1]);
+  });
 });

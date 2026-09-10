@@ -9,6 +9,8 @@ pub mod doc;
 pub mod tray_image;
 
 use std::sync::Mutex;
+use std::thread;
+use std::time::Duration;
 
 use tauri::{
     menu::{Menu, MenuItem, MenuItemBuilder, PredefinedMenuItem},
@@ -19,6 +21,37 @@ use tauri_plugin_autostart::MacosLauncher;
 use user_idle::UserIdle;
 
 use doc::DOC_FILENAME;
+
+/// Holds the macOS "user initiated" activity token that keeps App Nap from
+/// throttling the process while the window is hidden (TT-09). The token
+/// itself is opaque and only ever dropped; Foundation's retain/release is
+/// atomic, so it is safe to hand across threads even though objc2 does not
+/// mark it `Send`/`Sync` by default.
+#[cfg(target_os = "macos")]
+#[allow(dead_code)]
+struct AppNapActivity(objc2::rc::Retained<objc2::runtime::ProtocolObject<dyn objc2::runtime::NSObjectProtocol>>);
+
+#[cfg(target_os = "macos")]
+unsafe impl Send for AppNapActivity {}
+#[cfg(target_os = "macos")]
+unsafe impl Sync for AppNapActivity {}
+
+/// Opts the dev binary (no bundled Info.plist) out of App Nap by beginning
+/// a long-lived "user initiated, idle-sleep-allowed" activity. The token is
+/// kept in managed state for the life of the app; letting it drop would end
+/// the activity and re-expose the process to throttling.
+#[cfg(target_os = "macos")]
+fn disable_app_nap(app: &tauri::App) {
+    use objc2_foundation::{NSActivityOptions, NSProcessInfo, NSString};
+
+    let info = NSProcessInfo::processInfo();
+    let reason = NSString::from_str("Keep the ClickClock timer and tray updating while hidden");
+    let activity = info.beginActivityWithOptions_reason(
+        NSActivityOptions::UserInitiatedAllowingIdleSystemSleep,
+        &reason,
+    );
+    app.manage(AppNapActivity(activity));
+}
 
 /// The tray's menu items and the tray icon itself, kept in managed state so
 /// `set_tray` can update them later. Rust holds no *timer* state here, only
@@ -222,6 +255,20 @@ pub fn run() {
         ])
         .setup(|app| {
             setup_tray(app)?;
+
+            #[cfg(target_os = "macos")]
+            disable_app_nap(app);
+
+            // TT-09/TRAY-09: drive the app's tick from a Rust thread instead
+            // of a page-owned `setInterval`, which WebKit throttles once the
+            // window is hidden. This thread survives hiding the window and
+            // App Nap (see `disable_app_nap` above / `Info.plist`).
+            let app_handle = app.handle().clone();
+            thread::spawn(move || loop {
+                thread::sleep(Duration::from_secs(1));
+                let _ = app_handle.emit("tick", ());
+            });
+
             Ok(())
         })
         .on_window_event(|window, event| {

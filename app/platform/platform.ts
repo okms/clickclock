@@ -31,6 +31,8 @@ export interface Platform {
   hideWindow(): Promise<void>;
   /** Fires when the host hid the main window because the user closed it (TRAY-06). */
   onWindowHidden(handler: () => void): () => void;
+  /** Subscribe to the host's once-per-second tick. Returns an unsubscribe function. */
+  onTick(handler: () => void): () => void;
   /** Quit the product. */
   quit(): Promise<void>;
 }
