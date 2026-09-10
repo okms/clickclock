@@ -34,6 +34,8 @@ Model column is the default per `AGENTS.md`; escalate only as it allows.
 - [x] M5.3 Shell: tray_image renderer (tiny-skia + ab_glyph), set_tray text/overlay, left click emits toggle (sonnet) — `6129023`
 - [x] M5.4 Visual tuning against the live menu bar (digit centring, glyph beside the digits) and release v0.2.0
 
+- [x] M5.5 Tray kept updating while the window is hidden: tick driven from Rust, App Nap opt-out (v0.2.1)
+
 ## Open items after v1 (for the owner's review)
 - Windows build untested (NF-05); the code paths exist (user-idle, autostart plugin) but no Windows machine was available.
 - Manual checklist items not yet run: tray menu actions, close-to-tray notice, second-instance focus, launch-at-login in System Settings, sleep/wake gap, idle auto-pause and auto-resume against a real idle period. See `manual-checklist.md`.
