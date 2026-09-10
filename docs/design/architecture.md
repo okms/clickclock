@@ -176,6 +176,10 @@ idle" control, so UI work never needs Rust and can be done by the cheapest agent
    behaviour follows the spec: `TRAY-06` is Proposed, so until it is accepted the window's
    close button quits (matching Baseline).
 
+The webview runs under a strict Content Security Policy (`default-src 'self'`, IPC only in
+`connect-src`), so the app cannot reach the network even by accident; fonts and all assets
+are bundled (`NF-01`).
+
 Autostart state is read and written by the webview via the plugin's JS binding.
 Clipboard uses the browser `navigator.clipboard` API inside the webview (no plugin).
 

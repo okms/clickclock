@@ -43,7 +43,9 @@ Stopped uses `--ink-2` for dot and word. Appearance follows the system (`SET-04`
 
 ### Type
 
-One family: **Schibsted Grotesk** (Google Fonts, variable 400–900), fallback
+One family: **Schibsted Grotesk** (SIL OFL, variable 400–900), **bundled with the app** as
+`app/fonts/*.woff2`; the product never fetches fonts or anything else over the network
+(`NF-01`). Fallback
 `system-ui, -apple-system, "Segoe UI", sans-serif`. Tabular numerals everywhere numbers
 tick (`font-variant-numeric: tabular-nums`). Weights used: 400 and 600 only.
 
