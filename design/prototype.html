@@ -100,11 +100,11 @@ body {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--stage-line);
-  font-variant-numeric: tabular-nums;
 }
 @media (max-width: 420px) { .app { width: min(380px, 100vw - 32px); height: auto; min-height: 520px; } }
 
-.app button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.app [hidden] { display: none !important; }
+:where(.app) button { appearance: none; -webkit-appearance: none; font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 .app button:focus-visible, .app select:focus-visible, .app [role="switch"]:focus-visible {
   outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 10px;
 }
@@ -194,7 +194,8 @@ body {
 .row.week { font-weight: 600; border-top: 0; margin-top: 8px; }
 .row.week + .row { border-top: 1px solid var(--line); }
 .row:first-child { margin-top: 0; }
-.row .num { text-align: right; }
+.row .num {
+  font-variant-numeric: tabular-nums; text-align: right; }
 .row .num.dec { cursor: copy; border-radius: 6px; padding: 2px 4px; margin-right: -4px; }
 .row .num.dec:hover { background: var(--raise); }
 .row .num.time { color: var(--ink-2); }
@@ -210,12 +211,12 @@ body {
 .setting .help { display: block; font-size: 13px; color: var(--ink-2); margin-top: 2px; line-height: 1.5; }
 .setting .help:empty { display: none; }
 .select-wrap { position: relative; }
-.app select {
+:where(.app) select {
   appearance: none; -webkit-appearance: none;
   font: inherit; font-size: 15px; color: var(--ink); background: transparent;
   border: 1px solid var(--line); border-radius: 10px; padding: 7px 30px 7px 12px; cursor: pointer;
 }
-.app select:hover { background: var(--raise); }
+:where(.app) select:hover { background: var(--raise); }
 .select-wrap svg { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; stroke: var(--ink-2); fill: none; stroke-width: 1.8; pointer-events: none; }
 .switch {
   width: 44px; height: 24px; border-radius: 999px; background: var(--line); position: relative; flex: none;

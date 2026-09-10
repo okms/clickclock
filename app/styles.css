@@ -84,7 +84,6 @@ body {
   font-size: 15px;
   line-height: 1.4;
   -webkit-font-smoothing: antialiased;
-  font-variant-numeric: tabular-nums;
 }
 
 .app {
@@ -99,7 +98,10 @@ body {
 /* Link to Google Fonts is in index.html */
 
 /* Buttons and focus rings */
-.app button {
+.app [hidden] { display: none !important; }
+:where(.app) button {
+  appearance: none;
+  -webkit-appearance: none;
   font: inherit;
   color: inherit;
   background: none;
@@ -478,6 +480,7 @@ body {
 }
 
 .row .num {
+  font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
@@ -538,7 +541,7 @@ body {
   position: relative;
 }
 
-.app select {
+:where(.app) select {
   appearance: none;
   -webkit-appearance: none;
   font: inherit;
@@ -551,7 +554,7 @@ body {
   cursor: pointer;
 }
 
-.app select:hover {
+:where(.app) select:hover {
   background: var(--raise);
 }
 
