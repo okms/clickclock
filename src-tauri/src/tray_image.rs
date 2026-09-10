@@ -467,7 +467,7 @@ mod tests {
         )
         .expect("valid pixmap for debug PNG");
         pixmap
-            .save_png("/tmp/clickclock-tray-pause.png")
+            .save_png(std::env::temp_dir().join("clickclock-tray-pause.png"))
             .expect("write debug PNG");
 
         let stopped = render(None, Overlay::Stop, 2);
@@ -477,7 +477,7 @@ mod tests {
         )
         .expect("valid pixmap for debug PNG");
         pixmap
-            .save_png("/tmp/clickclock-tray-stop.png")
+            .save_png(std::env::temp_dir().join("clickclock-tray-stop.png"))
             .expect("write debug PNG");
 
         // Sanity: alpha_at / pixel_at are used above; touch them here too so
