@@ -74,7 +74,7 @@ Sentence case everywhere. No all-caps.
 ┌──────────────────────────────────────┐
 │ ● Running                      ▤  ⚙ │  state row; icon buttons: history, settings
 │                                      │
-│ Wednesday 10 September               │  13 px, --ink-2
+│ Thursday 10 September               │  13 px, --ink-2
 │                                      │
 │ 7.50 hours                           │  104 px figure, 15 px unit at baseline
 │ 07:30                                │  26 px, --ink-2
