@@ -20,11 +20,11 @@ Progress must be saved often enough that an abrupt shutdown or crash loses at mo
 minute of Running time. Saving must never leave the stored data in a corrupt or partially
 written state; a failed save leaves the previous good data intact.
 
-### PERS-05 Human-readable storage — Proposed
+### PERS-05 Human-readable storage — Accepted
 The stored data should be in a plain, human-readable text format that the user can open,
 read, back up, and hand-edit with an ordinary text editor.
 
-### PERS-06 Per-period detail is kept — Proposed
+### PERS-06 Per-period detail is kept — Accepted
 The product should store when each counted period started and ended, not only the daily
 sum, so that history (`HIST`) and later corrections are possible. The daily total remains
 derivable from the periods plus any manual adjustments (`TT-12`).

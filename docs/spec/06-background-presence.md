@@ -22,17 +22,17 @@ shown as unavailable rather than hidden.
 Activating the tray icon (for example double-click, or the platform's primary activation)
 must bring the main view to the front.
 
-### TRAY-05 The icon reflects the state — Proposed
+### TRAY-05 The icon reflects the state — Deferred
 The tray icon should visibly differ between Running and not Running so the state can be
 read without hovering.
 
-### TRAY-06 Closing the main view keeps the product alive — Proposed
+### TRAY-06 Closing the main view keeps the product alive — Accepted
 Closing the main view should hide it and leave the product running in the tray. Quitting
 is an explicit action (`TRAY-03`). The product should say so the first time it happens.
 
 *Rationale.* The original exits when its window is closed, which silently stops
 tracking. For a tool that is supposed to run all day this is a trap.
 
-### TRAY-07 Single instance — Proposed
+### TRAY-07 Single instance — Accepted
 Only one instance of the product may run per user at a time. Launching it again should
 bring the existing main view to the front.

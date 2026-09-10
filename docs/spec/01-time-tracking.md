@@ -38,7 +38,7 @@ to zero**. Stop is unavailable when there is nothing to clear (Stopped with a ze
 *Rationale.* In the original product "stop" doubles as "clear today". It is the only
 destructive action in the product.
 
-### TT-05 Stop asks or offers a way back — Proposed
+### TT-05 Stop asks or offers a way back — Accepted
 Because stop discards work time, the product should either confirm before clearing or offer
 a short window to undo the clearing. A single accidental click must not silently destroy a
 day's total.
@@ -77,11 +77,11 @@ start of the gap.
 *Acceptance notes.* Close the lid for 20 minutes while Running; on wake, today's total has
 grown by at most the idle threshold, and the product reports it paused automatically.
 
-### TT-12 Manual adjustment of today's total — Proposed
+### TT-12 Manual adjustment of today's total — Deferred
 The user should be able to add or subtract time from today's total in steps (for example
 15 minutes) to correct for forgetting to start or pause. Adjustments are part of today's
 total and are persisted like counted time. The total may not go below zero.
 
-### TT-13 Keyboard control — Proposed
+### TT-13 Keyboard control — Accepted
 The main view should let the user start/pause with the keyboard (for example the space bar)
 without needing the pointer.

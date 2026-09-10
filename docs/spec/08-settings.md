@@ -4,17 +4,17 @@ Settings are few on purpose. Anything that does not need to be changed is not a 
 
 ## Requirements
 
-### SET-01 Idle threshold — Proposed
+### SET-01 Idle threshold — Accepted
 The user should be able to set the idle threshold (`IDLE-08`) from a small set of options
 between 1 and 30 minutes. Default 5 minutes.
 
-### SET-02 Automatic resume — Proposed
+### SET-02 Automatic resume — Accepted
 The user should be able to turn automatic resume (`IDLE-07`) on or off. Default on.
 
 ### SET-03 Launch at login — Baseline
 See `AUTO-01`. This is the only setting in the original product.
 
-### SET-04 Appearance follows the system — Proposed
+### SET-04 Appearance follows the system — Accepted
 The product should follow the computer's light or dark appearance automatically. This is
 not a user-facing setting.
 

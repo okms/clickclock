@@ -34,11 +34,11 @@ detected, it must resume Running by itself and indicate that it resumed after id
 A pause requested by the user (`TT-02`) must never be resumed by activity detection.
 Only automatic pauses auto-resume.
 
-### IDLE-07 Automatic resume is optional — Proposed
+### IDLE-07 Automatic resume is optional — Accepted
 The user should be able to turn automatic resume (`IDLE-05`) off, so that returning to the
 computer for something unrelated to work does not start the timer.
 
-### IDLE-08 Configurable threshold — Proposed
+### IDLE-08 Configurable threshold — Accepted
 The user should be able to change the idle threshold within a sensible range (for example
 1 to 30 minutes). See `SET-01`.
 

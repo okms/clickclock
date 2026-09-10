@@ -1,0 +1,21 @@
+{
+  "name": "consultant-timer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Personal, local-only daily work timer.",
+  "license": "MIT",
+  "scripts": {
+    "test": "TZ=Europe/Oslo vitest run",
+    "test:watch": "TZ=Europe/Oslo vitest",
+    "typecheck": "tsc --noEmit",
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5",
+    "vitest": "^3.2.4"
+  }
+}

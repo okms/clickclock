@@ -34,9 +34,9 @@ The main view must show the current tracking state in words: Running, Paused, or
 For a Paused state the view must also say *why* when the pause was automatic, including
 how long the user had been idle (`IDLE-04`).
 
-### DISP-07 The date is visible — Proposed
+### DISP-07 The date is visible — Accepted
 The main view should show which day the total belongs to, so the user is never in doubt
 after a midnight rollover or a laptop left open overnight.
 
-### DISP-08 Quick copy — Proposed
+### DISP-08 Quick copy — Accepted
 The product may offer a one-action way to copy the decimal-hours figure to the clipboard.

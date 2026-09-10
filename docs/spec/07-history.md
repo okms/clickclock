@@ -5,15 +5,15 @@ days but offers no way to see them.
 
 ## Requirements
 
-### HIST-01 Previous days are viewable — Proposed
+### HIST-01 Previous days are viewable — Accepted
 The user should be able to see a list of previous days with each day's total in both
 formats, most recent first.
 
-### HIST-02 Weekly total — Proposed
+### HIST-02 Weekly total — Accepted
 The list should show the total for the current calendar week (Monday to Sunday) and for
 each past week shown.
 
-### HIST-03 Copy a past day — Proposed
+### HIST-03 Copy a past day — Accepted
 Each past day's decimal-hours figure should be copyable as plain text.
 
 ### HIST-04 Edit a past day — Deferred

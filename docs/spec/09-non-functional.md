@@ -17,15 +17,15 @@ the user to install runtimes or dependencies separately.
 The product is for one person on their own computer. There is no sharing, no
 collaboration, and no multi-user data model.
 
-### NF-05 Runs on the user's desktop platforms — Proposed
+### NF-05 Runs on the user's desktop platforms — Accepted
 The product should run on macOS and Windows. Linux support may follow if it costs little.
 
-### NF-06 Accessible — Proposed
+### NF-06 Accessible — Accepted
 All controls should be reachable by keyboard with visible focus, text and controls should
 meet common contrast guidance, and motion should respect the user's reduced-motion
 preference.
 
-### NF-07 Sensible footprint — Proposed
+### NF-07 Sensible footprint — Accepted
 Installed size under roughly 30 MB and resident memory under roughly 100 MB are the
 targets. These are targets, not hard limits; local-only and feasibility win over size.
 
