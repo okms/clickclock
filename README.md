@@ -4,6 +4,23 @@ A personal, local-only daily work timer. It counts while you work, pauses itself
 walk away, and shows today's total the two ways timesheets want it: `7.50` and `07:30`.
 It lives in the menu bar or system tray and never talks to a network.
 
+## What it looks like
+
+<p>
+  <img src="docs/images/main-dark.png" width="380" alt="ClickClock main view: today's total as 0.02 hours and 00:01, a Start button, and Clear today">
+  <img src="docs/images/history-dark.png" width="380" alt="ClickClock history view: previous days grouped by week with decimal hours and hh:mm">
+</p>
+<p>
+  <img src="docs/images/settings-dark.png" width="380" alt="ClickClock settings: pause after being away for 5 minutes, resume when I come back, show time in the menu bar, open at login">
+</p>
+
+In the menu bar, today's total is always visible; a small pause mark appears beside it when
+the timer is paused, a square when it is stopped. Left click starts or pauses.
+
+<img src="docs/images/menubar-dark.png" width="420" alt="macOS menu bar showing 0.02 with a pause mark next to it">
+
+The app follows the system appearance; the screenshots above are in dark mode.
+
 ## Install
 
 Download the latest release from this repository's Releases page.
