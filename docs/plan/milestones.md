@@ -10,7 +10,7 @@ Model column is the default per `AGENTS.md`; escalate only as it allows.
 
 ## M1: Core (pure TypeScript, red-green, fake clock)
 - [x] M1.1 `core/format.ts`: decimal hours, HH:MM, local day keys, day and week labels, ISO week grouping — DISP-01, DISP-03, DISP-07, HIST-02 — haiku — `47376ec`
-- [ ] M1.2 `core/store.ts`: empty doc, `migrate` from unknown JSON, total per day, history rows, recovery of a dangling active period at launch — PERS-01, PERS-02, PERS-05, PERS-06, TT-08, TT-11, HIST-01, HIST-02, SET-05 — haiku
+- [x] M1.2 `core/store.ts`: empty doc, `migrate` from unknown JSON, total per day, history rows, recovery of a dangling active period at launch — PERS-01, PERS-02, PERS-05, PERS-06, TT-08, TT-11, HIST-01, HIST-02, SET-05 — haiku — `da38f34`
 - [x] M1.3 `core/timer.ts`: the state machine — TT-01..TT-04, TT-06..TT-11, IDLE-02..IDLE-06, IDLE-07 — sonnet (time logic is the product's main risk) — `df69afe`
 
 ## M2: App (browser-runnable via the mock platform)
