@@ -101,7 +101,9 @@ interface Storage    { load(): Promise<Doc|null>; save(doc: Doc): Promise<void> 
 ```
 
 `Timer` exposes `start()`, `pause()`, `stop()`, `adjust(seconds)`, and `tick()`. The shell
-calls `tick()` once a second with nothing else; the core reads `clock.now()` and
+calls `tick()` once a second with nothing else. The one-second cadence comes from the
+**native side** (a Rust thread emitting a `tick` event), not from a JavaScript timer,
+because WebKit throttles page timers when the window is hidden; the core reads `clock.now()` and
 `idle.idleSeconds()` and decides what happened, including:
 
 - **Rollover** (`TT-10`): if the local date of `now` differs from the active period's date,
@@ -177,7 +179,8 @@ idle" control, so UI work never needs Rust and can be done by the cheapest agent
      the bundled Schibsted Grotesk TTF: the decimal-hours text or the clock glyph, plus the
      semi-transparent pause/stop overlay (`TRAY-09`..`TRAY-11`). Re-rendered only when text
      or overlay changes. On Windows the text is ignored (fixed 16 px tray squares).
-4. Window: fixed initial size 380×520, resizable within limits, not maximisable. Close
+4. A one-second `tick` event emitted from a Rust thread drives the app's loop (see 3.1 and R3).
+5. Window: fixed initial size 380×520, resizable within limits, not maximisable. Close
    behaviour follows the spec: `TRAY-06` is Proposed, so until it is accepted the window's
    close button quits (matching Baseline).
 
@@ -200,7 +203,7 @@ Written before any code exists so that the risks are on record.
 |---|---|---|---|---|
 | R1 | Rust toolchain is not installed on the owner's machine; first build is slow (several minutes) and cheap agents may thrash on compiler errors. | Certain (toolchain) / Medium (thrash) | Medium | One-time `rustup` install is a milestone-0 task. The Rust file is fully specified above; AGENTS.md escalates Rust work to `sonnet` after two Haiku failures. If it still blocks, ADR-0002 names Electron as the fallback: same core, same app, one new `platform/electron.ts` plus a ~60-line main process. |
 | R2 | `user-idle` crate is third-party; could lag Tauri or OS releases. | Low | High (it *is* the feature) | It wraps three stable OS calls (`GetLastInputInfo`, `CGEventSourceSecondsSinceLastEventType`, XScreenSaver). If it breaks, the same three calls fit in ~40 lines of Rust with `windows-sys` and `core-graphics`. Verified as a milestone-0 spike before anything else is built. |
-| R3 | Webview timers throttle when the window is hidden, so `tick()` runs late. | High on macOS | Low | Totals derive from timestamps, never from tick counts (3.1). Late ticks delay auto-pause detection, but `IDLE-03` removes the measured idle time anyway, so the total stays correct. |
+| R3 | Webview timers throttle when the window is hidden, so `tick()` runs late. | High on macOS | Medium | Confirmed in v0.2.0: with the window closed to the tray, the menu bar total stopped advancing after a while. Since v0.2.1 the tick is emitted by a Rust thread and delivered through the IPC (`Platform.onTick`), which is not subject to page timer throttling, and the app opts out of App Nap (`NSAppSleepDisabled`, `NSProcessInfo` activity). Totals were never wrong: they derive from timestamps (3.1). |
 | R4 | If the window is *destroyed* rather than hidden, the webview and the timer die with it. | Medium | High | The shell never destroys the window except on Quit. Until `TRAY-06` is accepted, close means quit (Baseline), which is at least explicit. Recommend accepting `TRAY-06`. |
 | R5 | Sleep/wake: no reliable suspend event reaches the webview. | High | Medium | Not needed: the gap rule (`TT-11`) detects the sleep from the tick timestamps. Idle time reported by the OS after wake is also large, which triggers the same path. |
 | R6 | Autostart in development mode points at the dev binary, not the bundled app. | Certain in dev | Low | Only test `AUTO-*` against a bundled build; say so in the milestone. |
