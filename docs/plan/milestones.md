@@ -33,6 +33,6 @@ Model column is the default per `AGENTS.md`; escalate only as it allows.
 - Manual checklist items not yet run: tray menu actions, close-to-tray notice, second-instance focus, launch-at-login in System Settings, sleep/wake gap, idle auto-pause and auto-resume against a real idle period. See `manual-checklist.md`.
 
 ## Repository and releases
-- Remote: https://github.com/okms/clickclock (private). Push over SSH; the `gh` OAuth token
+- Remote: https://github.com/okms/clickclock (public, MIT). Push over SSH; the `gh` OAuth token
   lacks the `workflow` scope, so HTTPS pushes that touch `.github/workflows/` are refused.
 - v0.1.0 tagged 2026-09-10; the Release workflow builds macOS arm64/x64 and Windows x64.

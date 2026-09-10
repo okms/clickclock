@@ -97,7 +97,7 @@ checklist in the brief instead, and the subagent reports which items it verified
 
 ## 3. Git discipline
 
-- **One remote, `origin`, a private GitHub repository.** Work happens on `main` and is
+- **One remote, `origin`, the public GitHub repository okms/clickclock (MIT).** Work happens on `main` and is
   pushed there after each reviewed commit or batch. No pull requests are required for a
   single-owner repository; do not open any unless the owner asks.
 - **Releases are tags.** Pushing a `v*` tag runs `.github/workflows/release.yml`, which
