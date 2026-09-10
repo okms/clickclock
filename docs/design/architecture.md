@@ -162,7 +162,9 @@ idle" control, so UI work never needs Rust and can be done by the cheapest agent
 
 1. Registers `tauri-plugin-autostart` and `tauri-plugin-single-instance` (the latter
    focuses the existing window on a second launch).
-2. Builds the tray icon with menu items Start, Pause, Stop / Clear today, Show, Quit. Menu
+2. Builds the tray icon (a dedicated monochrome, transparent template image,
+   `src-tauri/icons/tray@2x.png`; the opaque app icon would flatten to a disc in the macOS
+   menu bar) with menu items Start, Pause, Stop / Clear today, Show, Quit. Menu
    clicks emit a `tray-action` event with the item id to the webview. Tray icon
    double-click (or left-click on macOS) shows and focuses the window.
 3. Exposes four commands:

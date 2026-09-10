@@ -117,10 +117,10 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
     let menu = Menu::with_items(app, &[&start, &pause, &stop, &sep1, &show, &sep2, &quit])?;
 
-    let icon = app
-        .default_window_icon()
-        .cloned()
-        .ok_or("missing default window icon; run `pnpm tauri icon design/icon.svg`")?;
+    // A dedicated monochrome, transparent template image: macOS flattens an
+    // opaque app icon to a solid disc in the menu bar. 44x44 renders sharp on
+    // Retina and scales down elsewhere.
+    let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/tray@2x.png"))?;
 
     let tray = TrayIconBuilder::new()
         .icon(icon)
