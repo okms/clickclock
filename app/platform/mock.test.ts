@@ -143,4 +143,46 @@ describe("MockPlatform", () => {
     platform.fireTick();
     expect(calls).toEqual([1]);
   });
+
+  it("UPD-01: checkForUpdates resolves nextUpdate by default", async () => {
+    const result = await platform.checkForUpdates();
+    expect(result).toEqual({
+      current: "0.2.1",
+      latest: "0.2.1",
+      url: "https://github.com/okms/clickclock/releases/latest",
+      isNewer: false,
+    });
+  });
+
+  it("UPD-01: checkForUpdates resolves nextUpdate after setting it", async () => {
+    const update = {
+      current: "0.2.1",
+      latest: "0.3.0",
+      url: "https://github.com/okms/clickclock/releases/tag/v0.3.0",
+      isNewer: true,
+    };
+    (platform as any).nextUpdate = update;
+    const result = await platform.checkForUpdates();
+    expect(result).toEqual(update);
+  });
+
+  it("UPD-01: checkForUpdates rejects when nextUpdate is an Error", async () => {
+    const error = new Error("Network error");
+    (platform as any).nextUpdate = error;
+    await expect(platform.checkForUpdates()).rejects.toBe(error);
+  });
+
+  it("UPD-04: openUrl records the URL in openedUrls", async () => {
+    await platform.openUrl("https://example.com");
+    expect((platform as any).openedUrls).toEqual(["https://example.com"]);
+  });
+
+  it("UPD-04: openUrl records multiple URLs", async () => {
+    await platform.openUrl("https://example.com");
+    await platform.openUrl("https://another.com");
+    expect((platform as any).openedUrls).toEqual([
+      "https://example.com",
+      "https://another.com",
+    ]);
+  });
 });

@@ -2,8 +2,9 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { disable, enable, isEnabled } from "@tauri-apps/plugin-autostart";
+import { openUrl as openerOpenUrl } from "@tauri-apps/plugin-opener";
 
-import type { Platform, TrayAction, TrayStatus } from "./platform";
+import type { Platform, TrayAction, TrayStatus, UpdateInfo } from "./platform";
 
 const TRAY_ACTIONS: ReadonlySet<string> = new Set(["start", "pause", "stop", "show", "toggle"]);
 
@@ -153,5 +154,24 @@ export class TauriPlatform implements Platform {
 
   async quit(): Promise<void> {
     // No-op: quitting is done by the tray menu in the shell (src-tauri/src/lib.rs).
+  }
+
+  async checkForUpdates(): Promise<UpdateInfo> {
+    const result = await invoke<{
+      current: string;
+      latest: string;
+      url: string;
+      is_newer: boolean;
+    }>("check_for_updates");
+    return {
+      current: result.current,
+      latest: result.latest,
+      url: result.url,
+      isNewer: result.is_newer,
+    };
+  }
+
+  async openUrl(url: string): Promise<void> {
+    await openerOpenUrl(url);
   }
 }

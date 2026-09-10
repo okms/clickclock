@@ -10,6 +10,13 @@ export interface TrayStatus {
   overlay: "none" | "pause" | "stop"; // indicator shown on the tray icon
 }
 
+export interface UpdateInfo {
+  current: string;
+  latest: string;
+  url: string;
+  isNewer: boolean;
+}
+
 export interface Platform {
   /** Seconds since the last keyboard/pointer input on the computer. */
   idleSeconds(): Promise<number>;
@@ -35,4 +42,8 @@ export interface Platform {
   onTick(handler: () => void): () => void;
   /** Quit the product. */
   quit(): Promise<void>;
+  /** UPD-01/02: one request, only when called. Rejects when the check could not be completed. */
+  checkForUpdates(): Promise<UpdateInfo>;
+  /** UPD-04: open a URL in the user's browser. */
+  openUrl(url: string): Promise<void>;
 }

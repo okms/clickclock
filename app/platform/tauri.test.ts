@@ -7,6 +7,7 @@ const getCurrentWindowMock = vi.fn(() => ({ hide: hideMock }));
 const isEnabledMock = vi.fn();
 const enableMock = vi.fn();
 const disableMock = vi.fn();
+const openerOpenUrlMock = vi.fn();
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: (...args: unknown[]) => invokeMock(...args),
@@ -26,6 +27,10 @@ vi.mock("@tauri-apps/plugin-autostart", () => ({
   disable: (...args: unknown[]) => disableMock(...args),
 }));
 
+vi.mock("@tauri-apps/plugin-opener", () => ({
+  openUrl: (...args: unknown[]) => openerOpenUrlMock(...args),
+}));
+
 // Imported after the mocks above so the module under test picks them up.
 import { TauriPlatform } from "./tauri";
 
@@ -38,6 +43,7 @@ describe("TauriPlatform", () => {
     isEnabledMock.mockReset();
     enableMock.mockReset();
     disableMock.mockReset();
+    openerOpenUrlMock.mockReset();
     // Default: listen resolves with a no-op unsubscribe function.
     listenMock.mockResolvedValue(() => {});
   });
@@ -225,5 +231,59 @@ describe("TauriPlatform", () => {
     unsubscribe();
     tickCallback!();
     expect(handler).toHaveBeenCalledTimes(1);
+  });
+
+  it("UPD-02: checkForUpdates invokes \"check_for_updates\" exactly once", async () => {
+    const updateInfo = {
+      current: "0.2.1",
+      latest: "0.3.0",
+      url: "https://github.com/okms/clickclock/releases/tag/v0.3.0",
+      is_newer: true,
+    };
+    invokeMock.mockImplementation(async (cmd: string) => {
+      if (cmd === "check_for_updates") return updateInfo;
+      throw new Error(`unexpected command ${cmd}`);
+    });
+    const platform = await TauriPlatform.create();
+    await platform.checkForUpdates();
+    expect(invokeMock).toHaveBeenCalledWith("check_for_updates");
+    expect(invokeMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("UPD-02: checkForUpdates maps is_newer to isNewer", async () => {
+    const updateInfo = {
+      current: "0.2.1",
+      latest: "0.3.0",
+      url: "https://github.com/okms/clickclock/releases/tag/v0.3.0",
+      is_newer: true,
+    };
+    invokeMock.mockImplementation(async (cmd: string) => {
+      if (cmd === "check_for_updates") return updateInfo;
+      return undefined;
+    });
+    const platform = await TauriPlatform.create();
+    const result = await platform.checkForUpdates();
+    expect(result).toEqual({
+      current: "0.2.1",
+      latest: "0.3.0",
+      url: "https://github.com/okms/clickclock/releases/tag/v0.3.0",
+      isNewer: true,
+    });
+  });
+
+  it("UPD-02: checkForUpdates rejects when invoke rejects", async () => {
+    invokeMock.mockImplementation(async (cmd: string) => {
+      if (cmd === "check_for_updates") throw new Error("check failed");
+      return undefined;
+    });
+    const platform = await TauriPlatform.create();
+    await expect(platform.checkForUpdates()).rejects.toThrow("check failed");
+  });
+
+  it("UPD-04: openUrl calls the mocked plugin-opener open with the URL", async () => {
+    openerOpenUrlMock.mockResolvedValue(undefined);
+    const platform = await TauriPlatform.create();
+    await platform.openUrl("https://example.com");
+    expect(openerOpenUrlMock).toHaveBeenCalledWith("https://example.com");
   });
 });

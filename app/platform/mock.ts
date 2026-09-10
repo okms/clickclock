@@ -1,4 +1,4 @@
-import type { Platform, TrayAction, TrayStatus } from "./platform";
+import type { Platform, TrayAction, TrayStatus, UpdateInfo } from "./platform";
 
 export interface MockOptions {
   storage?: Storage;
@@ -47,6 +47,13 @@ export class MockPlatform implements Platform {
   public lastTray: TrayStatus | null = null;
   public refuseLaunchAtLogin: boolean = false;
   public readonly copied: string[] = [];
+  public readonly openedUrls: string[] = [];
+  public nextUpdate: UpdateInfo | Error = {
+    current: "0.2.1",
+    latest: "0.2.1",
+    url: "https://github.com/okms/clickclock/releases/latest",
+    isNewer: false,
+  };
   private trayHandlers: Set<(action: TrayAction) => void> = new Set();
   private windowHiddenHandlers: Set<() => void> = new Set();
   private tickHandlers: Set<() => void> = new Set();
@@ -125,6 +132,17 @@ export class MockPlatform implements Platform {
 
   async quit(): Promise<void> {
     // No-op
+  }
+
+  async checkForUpdates(): Promise<UpdateInfo> {
+    if (this.nextUpdate instanceof Error) {
+      throw this.nextUpdate;
+    }
+    return this.nextUpdate;
+  }
+
+  async openUrl(url: string): Promise<void> {
+    this.openedUrls.push(url);
   }
 
   onTick(handler: () => void): () => void {

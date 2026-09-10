@@ -86,7 +86,11 @@
       <span><label>Open at login</label><span class="help" data-slot="login-help"></span></span>
       <button class="switch" role="switch" aria-checked="true" data-slot="login" aria-label="Open at login"></button>
     </div>
-    <p class="settings-note">Your data is one plain file on this computer. Nothing is sent anywhere.</p>
+    <div class="setting">
+      <span><label>Version <span data-slot="version"></span></label><span class="help" data-slot="update-result"></span></span>
+      <span class="update-actions"><button class="outline" data-slot="check-updates">Check for updates</button><button class="quiet" data-slot="open-release" hidden>Open download page</button></span>
+    </div>
+    <p class="settings-note">Your data is one plain file on this computer. Nothing is sent anywhere unless you check for updates.</p>
   </section>
 </div>
 

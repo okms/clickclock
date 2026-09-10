@@ -12,6 +12,7 @@ import { formatDecimalHours } from "../core/format";
 import { viewModel } from "./view/model";
 import { render } from "./view/render";
 import type { UiState } from "./view/render";
+import { stateFromResult } from "./view/updates";
 
 (async () => {
   // Global state
@@ -37,6 +38,7 @@ import type { UiState } from "./view/render";
     loginHelp: "",
     history: [],
     settings: timer.settings,
+    update: { kind: "idle" },
   };
 
   let lastSave = Date.now();
@@ -142,6 +144,7 @@ import type { UiState } from "./view/render";
   root.querySelector('[data-slot="back"]')?.addEventListener("click", () => {
     ui.view = "main";
     ui.confirm = false;
+    ui.update = { kind: "idle" };
     paint();
   });
 
@@ -217,6 +220,26 @@ import type { UiState } from "./view/render";
     timer.updateSettings({ showTimeInTray: !checked });
     void save();
     paint();
+  });
+
+  // Settings: check for updates
+  root.querySelector('[data-slot="check-updates"]')?.addEventListener("click", async () => {
+    ui.update = { kind: "checking" };
+    paint();
+    try {
+      const info = await platform.checkForUpdates();
+      ui.update = stateFromResult(info);
+    } catch {
+      ui.update = { kind: "failed" };
+    }
+    paint();
+  });
+
+  // Settings: open release page
+  root.querySelector('[data-slot="open-release"]')?.addEventListener("click", () => {
+    if (ui.update.kind === "available") {
+      void platform.openUrl(ui.update.url);
+    }
   });
 
   // --- Tray actions ---

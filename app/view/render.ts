@@ -6,6 +6,10 @@ import type { ViewModel } from "./model";
 import type { Settings } from "../../core/types";
 import type { HistoryWeek } from "../../core/store";
 import { formatDecimalHours, formatHHMM } from "../../core/format";
+import type { UpdateState } from "./updates";
+import { updateMessage } from "./updates";
+
+declare const __APP_VERSION__: string;
 
 export interface UiState {
   view: "main" | "history" | "settings";
@@ -14,6 +18,7 @@ export interface UiState {
   loginHelp: string;
   history: HistoryWeek[];
   settings: Settings;
+  update: UpdateState;
 }
 
 function $(root: HTMLElement, slot: string): HTMLElement | null {
@@ -193,6 +198,26 @@ export function render(root: HTMLElement, vm: ViewModel, ui: UiState): void {
     const traytime = $(root, "traytime");
     if (traytime) {
       traytime.setAttribute("aria-checked", String(ui.settings.showTimeInTray));
+    }
+
+    const version = $(root, "version");
+    if (version) {
+      version.textContent = __APP_VERSION__;
+    }
+
+    const updateResult = $(root, "update-result");
+    if (updateResult) {
+      updateResult.textContent = updateMessage(ui.update);
+    }
+
+    const checkUpdates = $(root, "check-updates");
+    if (checkUpdates && checkUpdates instanceof HTMLButtonElement) {
+      checkUpdates.disabled = ui.update.kind === "checking";
+    }
+
+    const openRelease = $(root, "open-release");
+    if (openRelease) {
+      (openRelease as HTMLElement).hidden = ui.update.kind !== "available";
     }
   }
 }
