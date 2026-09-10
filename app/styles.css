@@ -324,8 +324,13 @@ body {
   opacity: 1;
 }
 
+.hhmm:hover { background: var(--raise); }
 .hhmm {
-  margin: 8px 0 0;
+  align-self: flex-start;
+  text-align: left;
+  padding: 0 4px;
+  margin: 8px 0 0 -4px;
+  border-radius: 6px;
   font-size: 26px;
   line-height: 1.2;
   letter-spacing: -0.01em;
