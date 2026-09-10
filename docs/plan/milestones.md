@@ -36,6 +36,12 @@ Model column is the default per `AGENTS.md`; escalate only as it allows.
 
 - [x] M5.5 Tray kept updating while the window is hidden: tick driven from Rust, App Nap opt-out (v0.2.1)
 
+## M6: Check for updates (v0.3.0)
+- [x] M6.1 Spec UPD-01..05, NF-01 narrowed, UI and architecture notes, prototype row (Fable) — `8202630`
+- [ ] M6.2 Shell: check_for_updates command (reqwest, semver), opener plugin with scoped capability (sonnet)
+- [ ] M6.3 App: Platform.checkForUpdates/openUrl, Settings version row, result states (haiku)
+- [ ] M6.4 Live check and release v0.3.0
+
 ## Open items after v1 (for the owner's review)
 - Windows build untested (NF-05); the code paths exist (user-idle, autostart plugin) but no Windows machine was available.
 - Manual checklist items not yet run: tray menu actions, close-to-tray notice, second-instance focus, launch-at-login in System Settings, sleep/wake gap, idle auto-pause and auto-resume against a real idle period. See `manual-checklist.md`.
