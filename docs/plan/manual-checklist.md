@@ -43,7 +43,10 @@ total kept (TT-08, PERS-01, PERS-04 recovery); filled Start button while Paused.
 ## Tray
 - [ ] TRAY-01 Icon visible in the menu bar. TRAY-02 Tooltip shows state and both figures.
 - [ ] TRAY-03 Menu shows Start, Pause, Stop / Clear today, Show, Quit with correct enabled states.
-- [ ] TRAY-04 Left click brings the window to the front.
+- [ ] TRAY-08 Left click on the tray item starts tracking; a second left click pauses it.
+- [ ] TRAY-09 The menu bar shows today's decimal hours and updates while Running.
+- [ ] TRAY-10 Turning "Show time in the menu bar" off shows the clock glyph instead; on restores the time.
+- [ ] TRAY-11 Paused shows a translucent pause mark over the item; Stopped a square; Running none.
 - [ ] TRAY-06 Close the window: the app keeps running; tray Show brings it back. First time, the note explains this.
 - [ ] TRAY-07 Launch the app a second time: the existing window is focused, no second icon.
 

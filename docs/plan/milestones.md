@@ -28,6 +28,12 @@ Model column is the default per `AGENTS.md`; escalate only as it allows.
 - [x] M4.2 README updated with build/run instructions and the Gatekeeper note — `README.md`
 - [x] M4.3 Spec statuses reviewed; anything not implemented is reflected in the plan — all Baseline and Accepted requirements have an implementation; TT-12, TRAY-05, HIST-04, HIST-05, PERS-07 remain Deferred
 
+## M5: Tray shows time, left click toggles (v0.2.0)
+- [x] M5.1 Spec and design: TRAY-08..11, SET-06; TRAY-04/05 withdrawn (Fable) — `e264016`
+- [x] M5.2 App: showTimeInTray setting, TrayStatus text/overlay, toggle action, settings switch (haiku) — `21dcc49`
+- [x] M5.3 Shell: tray_image renderer (tiny-skia + ab_glyph), set_tray text/overlay, left click emits toggle (sonnet) — `6129023`
+- [ ] M5.4 Visual tuning against the live menu bar (text size/weight, overlay legibility) and release v0.2.0
+
 ## Open items after v1 (for the owner's review)
 - Windows build untested (NF-05); the code paths exist (user-idle, autostart plugin) but no Windows machine was available.
 - Manual checklist items not yet run: tray menu actions, close-to-tray notice, second-instance focus, launch-at-login in System Settings, sleep/wake gap, idle auto-pause and auto-resume against a real idle period. See `manual-checklist.md`.
