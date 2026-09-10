@@ -53,7 +53,8 @@ A setting, on by default, chooses between showing the time (`TRAY-09`) and showi
 plain clock icon. See `SET-06`.
 
 ### TRAY-11 Paused and Stopped are marked on the tray item — Accepted
-When Paused, a small pause glyph must be overlaid on the tray item (over the right end of
-the time text, or over the clock icon). When Stopped, a stop glyph is overlaid the same
-way. The overlay is semi-transparent (about half opacity) so what is underneath stays
-legible. When Running there is no overlay.
+When Paused, a small pause glyph must mark the tray item; when Stopped, a stop glyph. When
+the time is shown, the glyph sits **beside** the digits (to their right, with a small gap),
+never over them, because overlaid marks make small tray text unreadable. In icon mode the
+glyph is overlaid on the right side of the clock. The glyph is semi-transparent (about
+half opacity). When Running there is no glyph.

@@ -14,9 +14,17 @@
 //! and straight-alpha representations are identical (color * anything = 0),
 //! so the pixmap's raw byte buffer can be returned as straight RGBA with no
 //! extra unpremultiply step.
+//!
+//! Text is not rasterized by `ab_glyph`'s built-in coverage renderer.
+//! Instead, each glyph's raw outline curves are read from the font (unscaled,
+//! y-up, in font design units) and converted into a `tiny-skia` vector path
+//! placed at the glyph's pen position, which is then filled *and* stroked
+//! (see `outline_to_path`). Stroking on top of the fill fakes a heavier
+//! weight than the variable font's default (400) instance offers, which
+//! reads too light in a real menu bar.
 
-use ab_glyph::{Font, FontRef, PxScale, ScaleFont};
-use tiny_skia::{LineCap, Paint, PathBuilder, Pixmap, PremultipliedColorU8, Stroke, Transform};
+use ab_glyph::{Font, FontRef, Outline, OutlineCurve, PxScale, ScaleFont};
+use tiny_skia::{FillRule, LineCap, LineJoin, Paint, PathBuilder, Pixmap, Stroke, Transform};
 
 const FONT_BYTES: &[u8] = include_bytes!("../fonts/SchibstedGrotesk-Variable.ttf");
 
@@ -48,24 +56,41 @@ pub fn parse_overlay(s: &str) -> Overlay {
 /// Renders the tray image.
 ///
 /// `scale` 2 means Retina; the image height is always `22 * scale` px.
-/// - `text` `Some(s)`: draws `s` in the bundled font at `14 * scale` px,
-///   black, vertically centred, with `2 * scale` px of side padding; the
-///   image is only as wide as the text needs (TRAY-09).
+/// - `text` `Some(s)`: draws `s` in the bundled font at `17 * scale` px
+///   (matched to look like 13pt system text, since this font's cap height
+///   is ~0.7 em), black, emboldened past the font's default weight, with
+///   `2 * scale` px of left padding and `6 * scale` px of right padding (the
+///   extra room the overlay sits in); the image is only as wide as the text
+///   needs (TRAY-09). It is vertically centred on the drawn glyphs' own ink
+///   bounds (roughly their cap height), not the font's full em box.
 /// - `text` `None`: draws a clock glyph (circle + minute hand pointing up +
 ///   hour hand at two o'clock) inside a `22 * scale` px square (TRAY-10).
 /// - `overlay`: drawn after the content, so it sits on top of it, at about
-///   50% black opacity, positioned over the right end of the content with a
-///   `1 * scale` px inset from the right edge, vertically centred (TRAY-11).
+///   50% black opacity, its right edge inset `1 * scale` px from the image's
+///   right edge, vertically centred, overlapping roughly the right half of
+///   the last digit (or the clock's right side) (TRAY-11).
 pub fn render(text: Option<&str>, overlay: Overlay, scale: u32) -> Rendered {
     let scale_f = scale as f32;
     let height = 22 * scale;
 
-    let mut pixmap = match text {
-        Some(s) => render_text(s, scale_f, height),
-        None => render_clock(scale_f, height),
+    let pixmap = match text {
+        Some(s) => {
+            // Beside the digits: reserve gap + glyph width on the right (TRAY-11).
+            let extra = if overlay == Overlay::None {
+                0.0
+            } else {
+                TEXT_GLYPH_GAP * scale_f + overlay_width(overlay, scale_f)
+            };
+            let mut pm = render_text(s, scale_f, height, extra);
+            draw_overlay(&mut pm, overlay, scale_f, 2.0 * scale_f);
+            pm
+        }
+        None => {
+            let mut pm = render_clock(scale_f, height);
+            draw_overlay(&mut pm, overlay, scale_f, 1.0 * scale_f);
+            pm
+        }
     };
-
-    draw_overlay(&mut pixmap, overlay, scale_f);
 
     Rendered {
         width: pixmap.width(),
@@ -74,38 +99,79 @@ pub fn render(text: Option<&str>, overlay: Overlay, scale: u32) -> Rendered {
     }
 }
 
-/// Blends a black pixel of the given coverage (0..1) into `pixmap` at
-/// `(x, y)` using standard "source over" alpha compositing. Because both
-/// the existing and incoming color are always black, only the alpha
-/// channel actually changes.
-fn blend_black(pixmap: &mut Pixmap, x: i32, y: i32, coverage: f32) {
-    if coverage <= 0.0 {
-        return;
+/// Converts one glyph's raw outline (unscaled, unpositioned, y-up font
+/// design units) into an absolute-coordinate `tiny-skia` path: each point is
+/// scaled by `(h, v)` and placed relative to `(pos_x, pos_y)` (the glyph's
+/// pen position, i.e. `(cursor_x, baseline_y)`). The vertical axis is
+/// flipped because font outlines are y-up and the canvas is y-down.
+///
+/// `ab_glyph::OutlineCurve`s do not mark contour boundaries explicitly: a
+/// new contour starts whenever a segment's start point does not match the
+/// previous segment's end point. Each contour is explicitly `close()`d so
+/// that a subsequent stroke (used to embolden the glyph) forms an unbroken
+/// loop instead of leaving a seam.
+fn outline_to_path(outline: &Outline, h: f32, v: f32, pos_x: f32, pos_y: f32) -> Option<tiny_skia::Path> {
+    let to_xy = |p: ab_glyph::Point| (pos_x + p.x * h, pos_y - p.y * v);
+
+    let mut pb = PathBuilder::new();
+    let mut last: Option<(f32, f32)> = None;
+    let mut subpath_open = false;
+
+    for curve in &outline.curves {
+        let start = match *curve {
+            OutlineCurve::Line(p0, _) => p0,
+            OutlineCurve::Quad(p0, _, _) => p0,
+            OutlineCurve::Cubic(p0, _, _, _) => p0,
+        };
+        let start_xy = to_xy(start);
+        if last != Some(start_xy) {
+            if subpath_open {
+                pb.close();
+            }
+            pb.move_to(start_xy.0, start_xy.1);
+            subpath_open = true;
+        }
+
+        last = Some(match *curve {
+            OutlineCurve::Line(_, p1) => {
+                let (x, y) = to_xy(p1);
+                pb.line_to(x, y);
+                (x, y)
+            }
+            OutlineCurve::Quad(_, p1, p2) => {
+                let (cx, cy) = to_xy(p1);
+                let (x, y) = to_xy(p2);
+                pb.quad_to(cx, cy, x, y);
+                (x, y)
+            }
+            OutlineCurve::Cubic(_, p1, p2, p3) => {
+                let (c1x, c1y) = to_xy(p1);
+                let (c2x, c2y) = to_xy(p2);
+                let (x, y) = to_xy(p3);
+                pb.cubic_to(c1x, c1y, c2x, c2y, x, y);
+                (x, y)
+            }
+        });
     }
-    let width = pixmap.width() as i32;
-    let height = pixmap.height() as i32;
-    if x < 0 || y < 0 || x >= width || y >= height {
-        return;
+    if subpath_open {
+        pb.close();
     }
-    let idx = (y * width + x) as usize;
-    let pixels = pixmap.pixels_mut();
-    let old_a = pixels[idx].alpha() as f32;
-    let src_a = (coverage.clamp(0.0, 1.0) * 255.0).round();
-    let new_a = (src_a + old_a * (255.0 - src_a) / 255.0).round().clamp(0.0, 255.0) as u8;
-    // Safe: r = g = b = 0 always satisfies the premultiplied invariant.
-    pixels[idx] = PremultipliedColorU8::from_rgba(0, 0, 0, new_a).unwrap();
+
+    pb.finish()
 }
 
-/// Lays out `s` in the embedded font at `14 * scale` px, returning a pixmap
-/// sized to fit it with `2 * scale` px of padding on each side.
-fn render_text(s: &str, scale: f32, height: u32) -> Pixmap {
+/// Lays out `s` in the embedded font at `17 * scale` px, returning a pixmap
+/// sized to fit it with `2 * scale` px of padding on the left and
+/// `2 * scale + 4 * scale` px on the right (extra room for the overlay).
+fn render_text(s: &str, scale: f32, height: u32, extra_right: f32) -> Pixmap {
     let font = FontRef::try_from_slice(FONT_BYTES).expect("embedded font is valid");
-    let px_size = 14.0 * scale;
+    let px_size = 17.0 * scale;
     let scaled_font = font.as_scaled(PxScale::from(px_size));
-    let padding = 2.0 * scale;
+    let left_padding = 2.0 * scale;
+    let right_padding = 2.0 * scale + extra_right;
+    let factor = scaled_font.scale_factor();
 
-    // First pass: measure the total advance so we know how wide to make
-    // the canvas.
+    // First pass: measure the total advance (canvas width).
     let mut advance = 0.0f32;
     let mut prev_id = None;
     for ch in s.chars() {
@@ -117,34 +183,51 @@ fn render_text(s: &str, scale: f32, height: u32) -> Pixmap {
         prev_id = Some(id);
     }
 
-    let width = ((padding * 2.0 + advance).ceil() as u32).max(1);
+    let width = ((left_padding + right_padding + advance).ceil() as u32).max(1);
     let mut pixmap = Pixmap::new(width, height).expect("non-zero tray image size");
 
-    // Vertically centre the font's ascent/descent box within the image.
-    let ascent = scaled_font.ascent();
-    let descent = scaled_font.descent();
-    let text_block_height = ascent - descent;
-    let top = (height as f32 - text_block_height) / 2.0;
-    let baseline_y = top + ascent;
+    let mut paint = Paint::default();
+    paint.set_color_rgba8(0, 0, 0, 255);
+    paint.anti_alias = true;
 
-    let mut cursor_x = padding;
+    // Stroking the same outline the fill uses fakes a heavier weight than
+    // the variable font's default (400) instance, which reads too light in
+    // a real menu bar.
+    let mut stroke = Stroke::default();
+    stroke.width = 0.55 * scale;
+    stroke.line_join = LineJoin::Round;
+
+    // Second pass: build every glyph path on a baseline at y = 0, then shift
+    // them all so the ink's own bounding box (roughly the cap height, since
+    // the text is digits) is centred in the image. Working from the mapped
+    // path bounds keeps this independent of the font's y-axis convention.
+    let mut paths = Vec::new();
+    let mut cursor_x = left_padding;
     let mut prev_id = None;
     for ch in s.chars() {
         let id = font.glyph_id(ch);
         if let Some(prev) = prev_id {
             cursor_x += scaled_font.kern(prev, id);
         }
-        let glyph = id.with_scale_and_position(px_size, ab_glyph::point(cursor_x, baseline_y));
-        if let Some(outlined) = font.outline_glyph(glyph) {
-            let bounds = outlined.px_bounds();
-            let origin_x = bounds.min.x.round() as i32;
-            let origin_y = bounds.min.y.round() as i32;
-            outlined.draw(|gx, gy, coverage| {
-                blend_black(&mut pixmap, origin_x + gx as i32, origin_y + gy as i32, coverage);
-            });
+        if let Some(outline) = font.outline(id) {
+            if let Some(path) = outline_to_path(&outline, factor.horizontal, factor.vertical, cursor_x, 0.0) {
+                paths.push(path);
+            }
         }
         cursor_x += scaled_font.h_advance(id);
         prev_id = Some(id);
+    }
+    let (mut ink_top, mut ink_bottom) = (f32::MAX, f32::MIN);
+    for path in &paths {
+        let b = path.bounds();
+        ink_top = ink_top.min(b.top());
+        ink_bottom = ink_bottom.max(b.bottom());
+    }
+    let dy = if paths.is_empty() { 0.0 } else { height as f32 / 2.0 - (ink_top + ink_bottom) / 2.0 };
+    let shift = Transform::from_translate(0.0, dy);
+    for path in &paths {
+        pixmap.fill_path(path, &paint, FillRule::Winding, shift, None);
+        pixmap.stroke_path(path, &paint, &stroke, shift, None);
     }
 
     pixmap
@@ -218,17 +301,28 @@ fn rounded_rect_path(x: f32, y: f32, w: f32, h: f32, r: f32) -> Option<tiny_skia
 
 /// Paints the pause/stop overlay over the right end of whatever content is
 /// already on `pixmap`, at ~50% black opacity (TRAY-11). Drawn last so it
-/// sits on top of the content.
-fn draw_overlay(pixmap: &mut Pixmap, overlay: Overlay, scale: f32) {
+/// sits on top of the content. Same geometry regardless of whether the
+/// content is text or the clock icon: only `pixmap`'s final dimensions
+/// matter, so it lands over the right side of either.
+/// Width of the overlay glyph in px, so text mode can reserve room beside the digits.
+fn overlay_width(overlay: Overlay, scale: f32) -> f32 {
+    match overlay {
+        Overlay::Pause => 2.4 * scale * 2.0 + 2.2 * scale,
+        Overlay::Stop => 9.0 * scale,
+        Overlay::None => 0.0,
+    }
+}
+
+/// Gap between the digits and the glyph in text mode (TRAY-11: beside, not over).
+const TEXT_GLYPH_GAP: f32 = 3.0;
+
+fn draw_overlay(pixmap: &mut Pixmap, overlay: Overlay, scale: f32, right_inset: f32) {
     if overlay == Overlay::None {
         return;
     }
 
     let width = pixmap.width() as f32;
     let height = pixmap.height() as f32;
-    let glyph_height = 9.0 * scale;
-    let right_inset = 1.0 * scale;
-    let top = (height - glyph_height) / 2.0;
 
     let mut paint = Paint::default();
     paint.set_color_rgba8(0, 0, 0, 128); // ~50% opacity black.
@@ -236,9 +330,11 @@ fn draw_overlay(pixmap: &mut Pixmap, overlay: Overlay, scale: f32) {
 
     match overlay {
         Overlay::Pause => {
-            let bar_width = 2.2 * scale;
-            let gap = 2.0 * scale;
+            let glyph_height = 11.0 * scale;
+            let bar_width = 2.4 * scale;
+            let gap = 2.2 * scale;
             let total_width = bar_width * 2.0 + gap;
+            let top = (height - glyph_height) / 2.0;
             let right_x = width - right_inset;
             let left_x = right_x - total_width;
 
@@ -257,17 +353,12 @@ fn draw_overlay(pixmap: &mut Pixmap, overlay: Overlay, scale: f32) {
             }
         }
         Overlay::Stop => {
-            let side = glyph_height;
+            let side = 9.0 * scale;
+            let top = (height - side) / 2.0;
             let right_x = width - right_inset;
             let left_x = right_x - side;
             if let Some(path) = rounded_rect_path(left_x, top, side, side, 1.5 * scale) {
-                pixmap.fill_path(
-                    &path,
-                    &paint,
-                    tiny_skia::FillRule::Winding,
-                    Transform::identity(),
-                    None,
-                );
+                pixmap.fill_path(&path, &paint, FillRule::Winding, Transform::identity(), None);
             }
         }
         Overlay::None => {}
@@ -316,43 +407,32 @@ mod tests {
     }
 
     #[test]
-    fn tray_11_pause_overlay_only_touches_right_third_of_text() {
+    fn tray_11_pause_glyph_sits_beside_the_digits() {
         let base = render(Some("7.50"), Overlay::None, 2);
         let paused = render(Some("7.50"), Overlay::Pause, 2);
-        assert_eq!(base.width, paused.width);
         assert_eq!(base.height, paused.height);
-
-        let third = base.width / 3;
-        let mut left_identical = true;
-        let mut differs_in_right_third = false;
-        let mut saw_overlay_alpha = false;
-
+        // Room is added to the right for gap + glyph; the digits themselves are untouched.
+        assert!(paused.width > base.width, "paused render must be wider to fit the glyph");
+        let digits_right = base.width - 2 * 2; // base right padding is 2 * scale
+        let mut digits_identical = true;
+        let mut saw_glyph_alpha = false;
         for y in 0..base.height {
-            for x in 0..base.width {
-                let a = pixel_at(&base, x, y);
+            for x in 0..paused.width {
                 let b = pixel_at(&paused, x, y);
-                if x < third && a != b {
-                    left_identical = false;
-                }
-                if x >= 2 * third {
-                    if a != b {
-                        differs_in_right_third = true;
+                if x < digits_right {
+                    if pixel_at(&base, x, y) != b {
+                        digits_identical = false;
                     }
+                } else if x >= base.width {
                     let (_, _, _, alpha_b) = b;
-                    let (_, _, _, alpha_a) = a;
-                    if alpha_a == 0 && (100..=160).contains(&alpha_b) {
-                        saw_overlay_alpha = true;
+                    if (100..=160).contains(&alpha_b) {
+                        saw_glyph_alpha = true;
                     }
                 }
             }
         }
-
-        assert!(left_identical, "left third of the image must be unchanged by the overlay");
-        assert!(differs_in_right_third, "pause overlay must change pixels in the right third");
-        assert!(
-            saw_overlay_alpha,
-            "expected ~50%% overlay alpha (100..=160) at positions the base render left transparent"
-        );
+        assert!(digits_identical, "digits must be unchanged by the glyph");
+        assert!(saw_glyph_alpha, "expected ~50% glyph alpha (100..=160) beside the digits");
     }
 
     #[test]

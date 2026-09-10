@@ -194,9 +194,10 @@ template style (black shapes with alpha; macOS recolours it for light and dark m
   Grotesk at 14 pt, vertically centred, 2 pt side padding; width follows the text.
 - **Icon mode** (`TRAY-10` off): the clock glyph, a stroked circle with a minute hand at
   twelve and an hour hand at two, in a 22 pt square.
-- **Overlay** (`TRAY-11`): Paused adds two rounded vertical bars, Stopped a rounded square,
-  each about 9 pt tall, black at 50 % opacity, right-aligned over the last digit (or the
-  right side of the clock). Running adds nothing.
+- **State glyph** (`TRAY-11`): Paused adds two rounded vertical bars (11 pt tall), Stopped a
+  rounded square (9 pt), black at 50 % opacity. In time mode the glyph sits 3 pt to the
+  right of the digits; in icon mode it is overlaid on the right side of the clock. Running
+  adds nothing.
 - **Interaction**: left click toggles Start/Pause (`TRAY-08`). Right click opens the menu:
   Start, Pause, Stop / Clear today, Show, Quit, with inapplicable items disabled
   (`TRAY-03`). Tooltip: `Running, 7.50 hours (07:30)` (`TRAY-02`).

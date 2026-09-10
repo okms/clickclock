@@ -83,6 +83,6 @@ Each requirement has:
   TRAY-05, HIST-04, HIST-05, PERS-07.
 - 2026-09-10: Owner asked for the tray to show elapsed time and for left click to toggle
   tracking. Added TRAY-08..11 and SET-06 (Accepted); withdrew TRAY-04 and TRAY-05. Planner's
-  choices, easy to flip: the tray text is decimal hours; overlays sit over the right end of
-  the item at about half opacity; Windows falls back to the icon because its tray items are
+  choices, easy to flip: the tray text is decimal hours; the state glyph sits beside the digits
+  (owner's correction: overlaying it made the text unreadable) at about half opacity; Windows falls back to the icon because its tray items are
   fixed squares.
