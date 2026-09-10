@@ -340,6 +340,10 @@ body {
         <button class="switch" role="switch" aria-checked="true" data-slot="autoresume" aria-label="Resume when I come back"></button>
       </div>
       <div class="setting">
+        <span><label>Show time in the menu bar</label></span>
+        <button class="switch" role="switch" aria-checked="true" data-slot="traytime" aria-label="Show time in the menu bar"></button>
+      </div>
+      <div class="setting">
         <span><label>Open at login</label><span class="help" data-slot="login-help"></span></span>
         <button class="switch" role="switch" aria-checked="true" data-slot="login" aria-label="Open at login"></button>
       </div>
@@ -362,6 +366,7 @@ body {
     thresholdMin: 5,
     autoResume: true,
     login: true,
+    trayTime: true,
     history: true,
     date: new Date(2026, 8, 10),
   };
@@ -414,6 +419,7 @@ body {
     $(node, 'threshold').addEventListener('change', e => { state.thresholdMin = parseInt(e.target.value, 10); render(); });
     $(node, 'autoresume').addEventListener('click', () => { state.autoResume = !state.autoResume; render(); });
     $(node, 'login').addEventListener('click', () => { state.login = !state.login; render(); });
+    $(node, 'traytime').addEventListener('click', () => { state.trayTime = !state.trayTime; render(); });
     node.addEventListener('keydown', e => { if (e.key === 'Escape' && state.confirm) { state.confirm = false; render(); } });
   }
 
@@ -482,6 +488,7 @@ body {
       [...sel.options].forEach(o => { o.selected = parseInt(o.value, 10) === state.thresholdMin; });
       $(node, 'autoresume').setAttribute('aria-checked', String(state.autoResume));
       $(node, 'login').setAttribute('aria-checked', String(state.login));
+      $(node, 'traytime').setAttribute('aria-checked', String(state.trayTime));
     }
   }
   function row(name, hours, isWeek) {

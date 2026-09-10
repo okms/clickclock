@@ -18,5 +18,9 @@ See `AUTO-01`. This is the only setting in the baseline.
 The product should follow the computer's light or dark appearance automatically. This is
 not a user-facing setting.
 
+### SET-06 Show time in the menu bar — Accepted
+The user should be able to choose whether the tray item shows today's total (`TRAY-09`)
+or the plain icon (`TRAY-10`). Default on.
+
 ### SET-05 Settings persist — Baseline
 All settings are stored locally with the rest of the data and survive restarts.

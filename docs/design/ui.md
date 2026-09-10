@@ -171,6 +171,7 @@ Settings
 
 Pause after being away for       [ 5 minutes  ▾ ]
 Resume when I come back                     [ on ]
+Show time in the menu bar                   [ on ]
 Open at login                               [ on ]
 
 Your data is one plain file on this computer.
@@ -186,11 +187,21 @@ not allow this change." (`AUTO-04`).
 
 ## 6. Tray (`TRAY`)
 
-- Icon: a 16 px template glyph, a filled circle with a single hand at two o'clock.
-  `TRAY-05` (proposed): outline-only variant when not Running.
-- Tooltip: `Running, 7.50 hours (07:30)`.
-- Menu: Start, Pause, Stop / Clear today, separator, Show, separator, Quit. Inapplicable
-  items are disabled, not hidden (`TRAY-03`).
+The tray item is a single rendered image, 22 pt tall (44 px at 2x), in the platform's
+template style (black shapes with alpha; macOS recolours it for light and dark menu bars).
+
+- **Time mode** (default, `TRAY-09`): today's decimal hours, `7.50`, set in Schibsted
+  Grotesk at 14 pt, vertically centred, 2 pt side padding; width follows the text.
+- **Icon mode** (`TRAY-10` off): the clock glyph, a stroked circle with a minute hand at
+  twelve and an hour hand at two, in a 22 pt square.
+- **Overlay** (`TRAY-11`): Paused adds two rounded vertical bars, Stopped a rounded square,
+  each about 9 pt tall, black at 50 % opacity, right-aligned over the last digit (or the
+  right side of the clock). Running adds nothing.
+- **Interaction**: left click toggles Start/Pause (`TRAY-08`). Right click opens the menu:
+  Start, Pause, Stop / Clear today, Show, Quit, with inapplicable items disabled
+  (`TRAY-03`). Tooltip: `Running, 7.50 hours (07:30)` (`TRAY-02`).
+- **Windows**: fixed 16 px tray squares cannot show text, so icon mode is always used
+  there, with the overlay, and the tooltip carries the time.
 
 ---
 

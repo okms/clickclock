@@ -81,3 +81,8 @@ Each requirement has:
   Accepted for v1: TT-05, TT-13, DISP-07, DISP-08, IDLE-07, IDLE-08, PERS-05, PERS-06,
   TRAY-06, TRAY-07, HIST-01..03, SET-01, SET-02, SET-04, NF-05..07. Deferred: TT-12,
   TRAY-05, HIST-04, HIST-05, PERS-07.
+- 2026-09-10: Owner asked for the tray to show elapsed time and for left click to toggle
+  tracking. Added TRAY-08..11 and SET-06 (Accepted); withdrew TRAY-04 and TRAY-05. Planner's
+  choices, easy to flip: the tray text is decimal hours; overlays sit over the right end of
+  the item at about half opacity; Windows falls back to the icon because its tray items are
+  fixed squares.

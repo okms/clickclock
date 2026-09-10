@@ -18,13 +18,12 @@ The tray must offer these actions: **Start**, **Pause**, **Stop / Clear today**,
 (bring up the main view), and **Quit**. Actions that do not apply in the current state are
 shown as unavailable rather than hidden.
 
-### TRAY-04 Open the main view from the tray — Baseline
-Activating the tray icon (for example double-click, or the platform's primary activation)
-must bring the main view to the front.
+### TRAY-04 Open the main view from the tray — Withdrawn
+Superseded by `TRAY-08`: the primary activation now toggles tracking. The main view is
+opened from the tray menu (`TRAY-03`, Show).
 
-### TRAY-05 The icon reflects the state — Deferred
-The tray icon should visibly differ between Running and not Running so the state can be
-read without hovering.
+### TRAY-05 The icon reflects the state — Withdrawn
+Superseded by `TRAY-09`, `TRAY-10` and `TRAY-11`.
 
 ### TRAY-06 Closing the main view keeps the product alive — Accepted
 Closing the main view should hide it and leave the product running in the tray. Quitting
@@ -36,3 +35,25 @@ tracking. For a tool that is supposed to run all day this is a trap.
 ### TRAY-07 Single instance — Accepted
 Only one instance of the product may run per user at a time. Launching it again should
 bring the existing main view to the front.
+
+### TRAY-08 Left click toggles tracking — Accepted
+The tray icon's primary activation (left click) must start tracking when the product is
+not Running and pause it when it is Running, exactly like the main control (`TT-03`).
+
+### TRAY-09 The tray shows today's total — Accepted
+By default the tray item must show today's total as text in decimal hours (`7.50`, the
+primary figure of `DISP-02`) instead of a fixed icon, updating live like the main view.
+
+*Platform note.* This applies where the tray supports variable-width items (the macOS
+menu bar). Where the tray is a fixed small square (Windows), the product shows the icon
+(`TRAY-10` off behaviour) and the tooltip (`TRAY-02`) carries the time.
+
+### TRAY-10 Time or icon is a setting — Accepted
+A setting, on by default, chooses between showing the time (`TRAY-09`) and showing the
+plain clock icon. See `SET-06`.
+
+### TRAY-11 Paused and Stopped are marked on the tray item — Accepted
+When Paused, a small pause glyph must be overlaid on the tray item (over the right end of
+the time text, or over the clock icon). When Stopped, a stop glyph is overlaid the same
+way. The overlay is semi-transparent (about half opacity) so what is underneath stays
+legible. When Running there is no overlay.

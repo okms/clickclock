@@ -165,15 +165,18 @@ idle" control, so UI work never needs Rust and can be done by the cheapest agent
 2. Builds the tray icon (a dedicated monochrome, transparent template image,
    `src-tauri/icons/tray@2x.png`; the opaque app icon would flatten to a disc in the macOS
    menu bar) with menu items Start, Pause, Stop / Clear today, Show, Quit. Menu
-   clicks emit a `tray-action` event with the item id to the webview. Tray icon
-   double-click (or left-click on macOS) shows and focuses the window.
+   clicks emit a `tray-action` event with the item id to the webview. Left click emits
+   `tray-action` = `toggle` (`TRAY-08`); Show is a menu item.
 3. Exposes four commands:
    - `idle_seconds() -> f64` via the `user-idle` crate.
    - `read_doc() -> Option<String>` and `write_doc(json: String)` with temp-file + rename,
      in `app_data_dir()`.
-   - `set_tray(state: String, tooltip: String, can_start: bool, can_pause: bool,
-     can_stop: bool)` to update tooltip, item enabled flags, and (later, `TRAY-05`) the
-     icon variant.
+   - `set_tray(tooltip, running, can_start, can_pause, can_stop, text: Option<String>,
+     overlay: String)` to update the tooltip, the item enabled flags, and the tray image.
+     The image is rendered in Rust (`tray_image.rs`) with `tiny-skia` and `ab_glyph` from
+     the bundled Schibsted Grotesk TTF: the decimal-hours text or the clock glyph, plus the
+     semi-transparent pause/stop overlay (`TRAY-09`..`TRAY-11`). Re-rendered only when text
+     or overlay changes. On Windows the text is ignored (fixed 16 px tray squares).
 4. Window: fixed initial size 380×520, resizable within limits, not maximisable. Close
    behaviour follows the spec: `TRAY-06` is Proposed, so until it is accepted the window's
    close button quits (matching Baseline).
