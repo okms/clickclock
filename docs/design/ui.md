@@ -175,7 +175,7 @@ Resume when I come back                     [ on ]
 Show time in the menu bar                   [ on ]
 Open at login                               [ on ]
 
-Version 0.2.1                     [ Check for updates ]
+Version 0.3.0                     [ Check for updates ]
 You're up to date.
 
 Your data is one plain file on this computer.

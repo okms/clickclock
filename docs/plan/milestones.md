@@ -40,11 +40,11 @@ Model column is the default per `AGENTS.md`; escalate only as it allows.
 - [x] M6.1 Spec UPD-01..05, NF-01 narrowed, UI and architecture notes, prototype row (Fable) — `8202630`
 - [x] M6.2 Shell: check_for_updates command (reqwest, semver), opener plugin with scoped capability (sonnet) — `f03078d`
 - [x] M6.3 App: Platform.checkForUpdates/openUrl, Settings version row, result states (haiku) — `e837116`
-- [ ] M6.4 Live check and release v0.3.0
+- [x] M6.4 Live check and release v0.3.0 — live HTTP check verified from Rust (fetched 0.2.1); UI verified with the mock; shipped in v0.3.0
 
 ## M7: Hours and minutes primary (owner's review, v0.3.0)
 - [x] M7.1 Spec DISP-01..03, DISP-05/08, TRAY-09 revised; UI doc and prototype (Fable) — `c707a0f`
-- [ ] M7.2 App: formatHHMM without leading zero, primary/secondary swap, tray text and tooltip, history columns (haiku)
+- [x] M7.2 App: formatHHMM without leading zero, primary/secondary swap, tray text and tooltip, history columns (haiku) — `9fb302a`
 - [ ] M7.3 README screenshots refreshed; release v0.3.0 (with M6)
 
 ## Open items after v1 (for the owner's review)
