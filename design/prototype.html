@@ -231,6 +231,9 @@ body {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent);
 }
 .switch[aria-checked="true"]::after { transform: translateX(20px); }
+.outline { height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); font-weight: 600; font-size: 14px; white-space: nowrap; }
+.outline:hover:not(:disabled) { background: var(--raise); }
+.outline:disabled { opacity: .5; cursor: default; }
 .settings-note { margin-top: auto; font-size: 13px; color: var(--ink-2); line-height: 1.5; max-width: 34ch; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -347,7 +350,11 @@ body {
         <span><label>Open at login</label><span class="help" data-slot="login-help"></span></span>
         <button class="switch" role="switch" aria-checked="true" data-slot="login" aria-label="Open at login"></button>
       </div>
-      <p class="settings-note">Your data is one plain file on this computer. Nothing is sent anywhere.</p>
+      <div class="setting">
+        <span><label>Version 0.2.1</label><span class="help" data-slot="update-result"></span></span>
+        <button class="outline" data-slot="check-updates">Check for updates</button>
+      </div>
+      <p class="settings-note">Your data is one plain file on this computer. Nothing is sent anywhere unless you check for updates.</p>
     </section>
   </div>
 </template>
@@ -367,6 +374,7 @@ body {
     autoResume: true,
     login: true,
     trayTime: true,
+    updateResult: '',
     history: true,
     date: new Date(2026, 8, 10),
   };
@@ -420,6 +428,10 @@ body {
     $(node, 'autoresume').addEventListener('click', () => { state.autoResume = !state.autoResume; render(); });
     $(node, 'login').addEventListener('click', () => { state.login = !state.login; render(); });
     $(node, 'traytime').addEventListener('click', () => { state.trayTime = !state.trayTime; render(); });
+    $(node, 'check-updates').addEventListener('click', () => {
+      state.updateResult = 'Checking…'; render();
+      setTimeout(() => { state.updateResult = "You're up to date."; render(); }, 900);
+    });
     node.addEventListener('keydown', e => { if (e.key === 'Escape' && state.confirm) { state.confirm = false; render(); } });
   }
 
@@ -489,6 +501,8 @@ body {
       $(node, 'autoresume').setAttribute('aria-checked', String(state.autoResume));
       $(node, 'login').setAttribute('aria-checked', String(state.login));
       $(node, 'traytime').setAttribute('aria-checked', String(state.trayTime));
+      $(node, 'update-result').textContent = state.updateResult;
+      $(node, 'check-updates').disabled = state.updateResult === 'Checking…';
     }
   }
   function row(name, hours, isWeek) {

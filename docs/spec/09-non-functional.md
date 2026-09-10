@@ -2,7 +2,9 @@
 
 ### NF-01 Local only — Baseline
 The product must work with no network connection, must never require an account, and must
-never send any data off the computer. There is no telemetry, update check, or sync.
+never send any data off the computer. There is no telemetry, no automatic update check, and
+no sync. The only network access is the user-initiated check for updates in `UPD`, which
+sends nothing about the user.
 
 ### NF-02 Lightweight — Baseline
 The product must be quick to launch (main view visible within two seconds on ordinary

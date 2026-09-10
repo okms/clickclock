@@ -58,6 +58,7 @@ Each requirement has:
 | `HIST` | History | `07-history.md` |
 | `SET` | Settings | `08-settings.md` |
 | `NF` | Non-functional | `09-non-functional.md` |
+| `UPD` | Checking for updates | `10-updates.md` |
 | | Out of scope | `99-out-of-scope.md` |
 
 ## Vocabulary
@@ -86,3 +87,7 @@ Each requirement has:
   choices, easy to flip: the tray text is decimal hours; the state glyph sits beside the digits
   (owner's correction: overlaying it made the text unreadable) at about half opacity; Windows falls back to the icon because its tray items are
   fixed squares.
+- 2026-09-10: Owner asked for an in-app "check for updates". Added `UPD-01..04` (Accepted),
+  `UPD-05` (Deferred) and narrowed `NF-01`: the check is manual only and is the single
+  network access the product has. Planner's choice: the request resolves the project's
+  releases/latest page redirect rather than calling an API, so no keys or rate limits.

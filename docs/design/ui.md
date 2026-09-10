@@ -174,9 +174,18 @@ Resume when I come back                     [ on ]
 Show time in the menu bar                   [ on ]
 Open at login                               [ on ]
 
+Version 0.2.1                     [ Check for updates ]
+You're up to date.
+
 Your data is one plain file on this computer.
-Nothing is sent anywhere.
+Nothing is sent anywhere unless you check for updates.
 ```
+
+The version row (`UPD-01`..`UPD-04`): a quiet outlined button "Check for updates"; while
+checking it reads "Checking…" and is disabled. The 13 px result line under it reads one
+of: "You're up to date.", "Version 0.3.0 is available." followed by a quiet
+"Open download page" button, or "Couldn't check. Are you online?". The result clears when
+the view is left.
 
 Threshold options: 1, 2, 3, 5, 10, 15, 20, 30 minutes. Toggles are 44 × 24 switches with
 the knob in `--paper` and track in `--ink` when on, `--line` when off. If launch-at-login
@@ -234,4 +243,5 @@ Plain verbs, sentence case, no filler.
 | Copy feedback | Copied |
 | Empty history | Nothing yet. Previous days appear here once you have worked a full day. |
 | Autostart failure | Your computer did not allow this change. |
+| Update check | Check for updates / Checking… / You're up to date. / Version N is available. / Open download page / Couldn't check. Are you online? |
 | First hide to tray (`TRAY-06`) | Still running in the menu bar. Quit from there when you are done. |

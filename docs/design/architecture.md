@@ -180,6 +180,12 @@ idle" control, so UI work never needs Rust and can be done by the cheapest agent
      semi-transparent pause/stop overlay (`TRAY-09`..`TRAY-11`). Re-rendered only when text
      or overlay changes. On Windows the text is ignored (fixed 16 px tray squares).
 4. A one-second `tick` event emitted from a Rust thread drives the app's loop (see 3.1 and R3).
+   Two more commands for `UPD`: `check_for_updates() -> { current, latest, url, is_newer }`
+   performs one HTTPS request from Rust (`reqwest`, rustls) to
+   `https://github.com/okms/clickclock/releases/latest` without following the redirect and
+   reads the tag from the `Location` header, comparing with `semver`; and the official
+   `tauri-plugin-opener` opens the release page, with its capability restricted to that
+   URL prefix. The webview CSP stays fully offline.
 5. Window: fixed initial size 380×520, resizable within limits, not maximisable. Close
    behaviour follows the spec: `TRAY-06` is Proposed, so until it is accepted the window's
    close button quits (matching Baseline).
