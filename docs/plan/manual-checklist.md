@@ -10,7 +10,8 @@ resumes, the one control relabels (TT-01, TT-02, TT-03, DISP-04); several sessio
 (TT-06, seen in the stored JSON); the JSON document is readable and matches (PERS-05);
 threshold change to 1 minute persisted and reflected in the note (SET-01, IDLE-09);
 tray icon visible as a clock glyph in the menu bar (TRAY-01); appearance follows the
-system (SET-04, dark). Everything below is still to be run against the bundle.
+system (SET-04, dark); after a shell restart while Running the app came back Paused with the
+total kept (TT-08, PERS-01, PERS-04 recovery); filled Start button while Paused. Everything below is still to be run against the bundle.
 
 ## Launch and state
 - [ ] TT-08 First launch shows Stopped, `0.00`, `00:00`; the primary control says Start.

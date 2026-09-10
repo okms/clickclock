@@ -31,4 +31,3 @@ Model column is the default per `AGENTS.md`; escalate only as it allows.
 ## Open items after v1 (for the owner's review)
 - Windows build untested (NF-05); the code paths exist (user-idle, autostart plugin) but no Windows machine was available.
 - Manual checklist items not yet run: tray menu actions, close-to-tray notice, second-instance focus, launch-at-login in System Settings, sleep/wake gap, idle auto-pause and auto-resume against a real idle period. See `manual-checklist.md`.
-- Filled primary button in the Paused/Stopped state was verified in Chrome (mock build) but not yet seen in the Tauri window after the native-appearance reset landed.
