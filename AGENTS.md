@@ -101,9 +101,16 @@ checklist in the brief instead, and the subagent reports which items it verified
   pushed there after each reviewed commit or batch. No pull requests are required for a
   single-owner repository; do not open any unless the owner asks.
 - **Releases are tags.** Pushing a `v*` tag runs `.github/workflows/release.yml`, which
-  builds macOS and Windows bundles and publishes a GitHub Release. Bump the version in
-  `package.json`, `src-tauri/tauri.conf.json` and `src-tauri/Cargo.toml` in one commit
-  before tagging. Never move or delete a published tag.
+  builds macOS and Windows bundles and publishes a GitHub Release. Never move or delete a
+  published tag.
+- **Every release has release notes.** `CHANGELOG.md` (Keep a Changelog) is the source.
+  Any commit that changes user-visible behaviour also adds a line under `## [Unreleased]`
+  in the same commit, written for users, not for developers. To release: move the
+  Unreleased lines into a new `## [x.y.z] - YYYY-MM-DD` section, add its compare link at
+  the bottom, bump the version in `package.json`, `src-tauri/tauri.conf.json` and
+  `src-tauri/Cargo.toml`, commit as `chore: release x.y.z`, tag `vx.y.z`, push both. The
+  workflow takes the GitHub Release body from that section via `scripts/release-notes.sh`
+  and **fails if the section is missing**.
 - **Commit often and atomically.** One logical change per commit. Commit after every
   completed task, after every reviewed subagent diff, and after every doc change.
 - A behaviour change and its spec update belong in the **same** commit. Unrelated changes
@@ -143,6 +150,7 @@ checklist in the brief instead, and the subagent reports which items it verified
 - Named requirement IDs are satisfied and have tests where the behaviour is testable.
 - All commands stated in the brief pass; the output was actually looked at.
 - No user-visible behaviour exists that the spec does not describe.
+- Any user-visible change has a line under `## [Unreleased]` in `CHANGELOG.md`.
 - No dependency was added without a line in the relevant ADR or `docs/design/architecture.md`.
 - Nothing in the repo phones home, syncs, or requires an account. Local-only is a
   hard requirement (`NF-01`..`NF-04`).
@@ -158,6 +166,8 @@ checklist in the brief instead, and the subagent reports which items it verified
 AGENTS.md                 this file
 CLAUDE.md                 imports this file for Claude Code
 README.md                 human-facing overview
+CHANGELOG.md              release notes; the source of every GitHub Release body
+scripts/release-notes.sh  prints one version's section; used by the release workflow
 docs/
   README.md               index of all documentation
   spec/                   feature specification, implementation-free, requirement IDs

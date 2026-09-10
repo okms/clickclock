@@ -52,19 +52,26 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Release notes from CHANGELOG.md
+        id: notes
+        shell: bash
+        run: |
+          body="$(scripts/release-notes.sh "${GITHUB_REF_NAME}")"
+          {
+            echo "body<<NOTES_EOF"
+            printf '%s\n\n' "$body"
+            echo "---"
+            echo "Unsigned build. macOS: the first launch is blocked; open System Settings, Privacy & Security, and click Open Anyway (or run \`xattr -d com.apple.quarantine /Applications/ClickClock.app\`). Windows: if SmartScreen appears, choose More info, then Run anyway. All data stays on your computer; the only network access is the update check you start yourself."
+            echo "NOTES_EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: 'ClickClock ${{ github.ref_name }}'
-          releaseBody: |
-            Unsigned build. This app is not code-signed or notarized.
-
-            - macOS: right-click the app and choose "Open" the first time to launch it.
-            - Windows: if SmartScreen appears, click "More info" then "Run anyway".
-
-            All data stays local on your machine; nothing is uploaded or synced.
+          releaseBody: ${{ steps.notes.outputs.body }}
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}

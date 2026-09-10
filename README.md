@@ -81,8 +81,9 @@ pnpm tauri build   # a bundle under src-tauri/target/release/bundle/
 
 ## Release
 
-Bump `version` in `package.json`, `src-tauri/tauri.conf.json` and `src-tauri/Cargo.toml`,
-commit, then:
+Move the `Unreleased` lines in `CHANGELOG.md` into a new version section (the workflow
+refuses a tag without one), bump `version` in `package.json`, `src-tauri/tauri.conf.json`
+and `src-tauri/Cargo.toml`, commit, then:
 
 ```sh
 git tag v0.2.0
@@ -90,7 +91,8 @@ git push origin main --tags
 ```
 
 The release workflow builds macOS (arm64, x64) and Windows (x64) bundles and publishes
-them on a GitHub Release named after the tag.
+them on a GitHub Release named after the tag, with that version's changelog section as
+the release notes. See `CHANGELOG.md` for what changed in each release.
 
 ## Data
 
