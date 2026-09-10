@@ -6,6 +6,7 @@
 //! drives the tray through the `set_tray` command.
 
 pub mod doc;
+pub mod tray_image;
 
 use std::sync::Mutex;
 
@@ -28,6 +29,10 @@ struct TrayState {
     pause: MenuItem<Wry>,
     stop: MenuItem<Wry>,
     tray: TrayIcon<Wry>,
+    /// The (text, overlay) the tray icon was last rendered with, so the
+    /// once-per-second `set_tray` call can skip re-rendering and
+    /// `set_icon`-ing when nothing actually changed.
+    last_icon: Option<(Option<String>, String)>,
 }
 
 /// Shows the main window and brings it to the front (TRAY-04, and the
@@ -64,9 +69,14 @@ fn write_doc(app: AppHandle, json: String) -> Result<(), String> {
     doc::atomic_write(&path, &json).map_err(|err| err.to_string())
 }
 
-/// Updates the tray tooltip and the enabled state of the Start/Pause/Stop
-/// menu items. The app is the only source of truth for this state; Rust
-/// just renders what it is told (TRAY-02, TRAY-03).
+/// Updates the tray tooltip, the enabled state of the Start/Pause/Stop menu
+/// items, and the tray icon image. The app is the only source of truth for
+/// this state; Rust just renders what it is told (TRAY-02, TRAY-03,
+/// TRAY-09..TRAY-11).
+///
+/// `text` is today's total as decimal hours (e.g. `"7.50"`), or `None` to
+/// show the plain clock icon (TRAY-10). `overlay` is `"pause"`, `"stop"`,
+/// or anything else for no overlay (TRAY-11).
 #[tauri::command]
 fn set_tray(
     app: AppHandle,
@@ -75,14 +85,15 @@ fn set_tray(
     can_start: bool,
     can_pause: bool,
     can_stop: bool,
+    text: Option<String>,
+    overlay: String,
 ) -> Result<(), String> {
-    // `running` is accepted for forward compatibility with the icon-variant
-    // requirement (TRAY-05), which is not yet in scope; the tray icon does
-    // not change shape today.
+    // `running` is accepted for forward compatibility; today's tray shape
+    // is driven entirely by `text` and `overlay`, not `running` directly.
     let _ = running;
 
     let state = app.state::<Mutex<TrayState>>();
-    let guard = state.lock().map_err(|err| err.to_string())?;
+    let mut guard = state.lock().map_err(|err| err.to_string())?;
 
     guard
         .tray
@@ -101,6 +112,26 @@ fn set_tray(
         .set_enabled(can_stop)
         .map_err(|err| err.to_string())?;
 
+    // Windows trays are a fixed 16px square with no room for text; show the
+    // clock icon (with overlay) there and reserve the text rendering for
+    // platforms with variable-width tray items, i.e. macOS (TRAY-09).
+    let icon_text = if cfg!(target_os = "windows") { None } else { text };
+
+    let cache_key = (icon_text.clone(), overlay.clone());
+    if guard.last_icon.as_ref() != Some(&cache_key) {
+        let overlay_kind = tray_image::parse_overlay(&overlay);
+        let rendered = tray_image::render(icon_text.as_deref(), overlay_kind, 2);
+        let image = tauri::image::Image::new_owned(rendered.rgba, rendered.width, rendered.height);
+        // Sets the icon and re-asserts the macOS template flag atomically,
+        // avoiding a double-render flicker (falls back to plain `set_icon`
+        // on other platforms).
+        guard
+            .tray
+            .set_icon_with_as_template(Some(image), true)
+            .map_err(|err| err.to_string())?;
+        guard.last_icon = Some(cache_key);
+    }
+
     Ok(())
 }
 
@@ -117,13 +148,17 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
     let menu = Menu::with_items(app, &[&start, &pause, &stop, &sep1, &show, &sep2, &quit])?;
 
-    // A dedicated monochrome, transparent template image: macOS flattens an
-    // opaque app icon to a solid disc in the menu bar. 44x44 renders sharp on
-    // Retina and scales down elsewhere.
-    let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/tray@2x.png"))?;
+    // The initial icon: a monochrome, transparent template image rendered
+    // by `tray_image`, showing "0.00" with the stopped overlay (TRAY-09,
+    // TRAY-11) until the app sends its first real `set_tray` update.
+    // Template images let macOS recolor black-on-transparent shapes to
+    // match the light/dark menu bar instead of flattening them to a disc.
+    let initial = tray_image::render(Some("0.00"), tray_image::Overlay::Stop, 2);
+    let initial_icon =
+        tauri::image::Image::new_owned(initial.rgba, initial.width, initial.height);
 
     let tray = TrayIconBuilder::new()
-        .icon(icon)
+        .icon(initial_icon)
         .icon_as_template(true)
         .menu(&menu)
         .show_menu_on_left_click(false)
@@ -142,14 +177,17 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
             }
         })
         .on_tray_icon_event(|tray, event| {
-            // TRAY-04: left click brings the main window to front.
+            // TRAY-08: left click toggles the timer (start when not
+            // Running, pause when Running), the same as the main control.
+            // The app decides what "toggle" means; Rust just forwards the
+            // click.
             if let TrayIconEvent::Click {
                 button: MouseButton::Left,
                 button_state: MouseButtonState::Up,
                 ..
             } = event
             {
-                show_and_focus_main(tray.app_handle());
+                let _ = tray.app_handle().emit("tray-action", "toggle");
             }
         })
         .build(app)?;
@@ -159,6 +197,7 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         pause,
         stop,
         tray,
+        last_icon: Some((Some("0.00".to_string()), "stop".to_string())),
     }));
 
     Ok(())
