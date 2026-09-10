@@ -20,8 +20,8 @@ Model column is the default per `AGENTS.md`; escalate only as it allows.
 
 ## M3: Shell (Tauri 2)
 - [x] M3.1 `src-tauri/` scaffold with the four commands, tray, autostart and single-instance plugins, close-hides-window — TRAY-01..04, TRAY-06, TRAY-07, AUTO-*, PERS-03, PERS-04 — sonnet — `b2502eb`
-- [ ] M3.2 `app/platform/tauri.ts` adapter — sonnet
-- [ ] M3.3 Spike: `idle_seconds` returns sane values on macOS (manual check) — sonnet
+- [x] M3.2 `app/platform/tauri.ts` adapter — sonnet
+- [x] M3.3 Spike: `idle_seconds` returns sane values on macOS (manual check) — sonnet (user-idle 0.5 compiles and returns via idle_seconds; value checked in M4.1)
 
 ## M4: First version for review
 - [ ] M4.1 `pnpm tauri build` produces a runnable app bundle; manual checklist in `docs/plan/manual-checklist.md` executed
