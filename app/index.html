@@ -4,8 +4,88 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Consultant Timer</title>
+<link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-<p>Placeholder. Replaced in milestone M2.2.</p>
+
+<div class="app" aria-label="Consultant Timer">
+  <!-- Main view header -->
+  <header class="top">
+    <div class="state" data-slot="state-header">
+      <div class="state-line"><span class="dot" aria-hidden="true"></span><span class="state-word" aria-live="polite">Running</span></div>
+      <div class="state-why"></div>
+    </div>
+    <button class="back" data-slot="back" hidden>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5"/></svg>Today
+    </button>
+    <div class="icons" data-slot="icons">
+      <button class="icon-btn" data-go="history" aria-label="Previous days" title="Previous days">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      </button>
+      <button class="icon-btn" data-go="settings" aria-label="Settings" title="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h9M17 8h3M4 16h3M11 16h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <section class="view is-active" data-view="main">
+    <p class="date" data-slot="date">Thursday 10 September</p>
+    <div class="figure">
+      <button class="hours" data-slot="hours" title="Click to copy">7.50</button>
+      <span class="unit">hours</span>
+      <span class="copied" data-slot="copied">Copied</span>
+    </div>
+    <p class="hhmm" data-slot="hhmm">07:30</p>
+
+    <div class="actions" data-slot="actions">
+      <div class="normal">
+        <button class="primary" data-slot="primary">Pause</button>
+        <button class="quiet" data-slot="clear">Clear today</button>
+      </div>
+      <div class="confirm" data-slot="confirm">
+        <p data-slot="confirm-text">Clear today's 7.50 hours?</p>
+        <div class="confirm-row">
+          <button class="danger" data-slot="confirm-yes">Clear</button>
+          <button class="quiet" data-slot="confirm-no">Keep</button>
+        </div>
+      </div>
+      <p class="note" data-slot="note">Pauses by itself after 5 minutes away. Everything stays on this computer.</p>
+    </div>
+  </section>
+
+  <!-- History -->
+  <section class="view" data-view="history">
+    <h2 class="section-title">Previous days</h2>
+    <ul class="list" data-slot="list"></ul>
+  </section>
+
+  <!-- Settings -->
+  <section class="view" data-view="settings">
+    <h2 class="section-title">Settings</h2>
+    <div class="setting">
+      <label for="__thr">Pause after being away for</label>
+      <span class="select-wrap">
+        <select data-slot="threshold" id="__thr">
+          <option>1 minute</option><option>2 minutes</option><option>3 minutes</option>
+          <option selected>5 minutes</option><option>10 minutes</option><option>15 minutes</option>
+          <option>20 minutes</option><option>30 minutes</option>
+        </select>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+      </span>
+    </div>
+    <div class="setting">
+      <span><label>Resume when I come back</label></span>
+      <button class="switch" role="switch" aria-checked="true" data-slot="autoresume" aria-label="Resume when I come back"></button>
+    </div>
+    <div class="setting">
+      <span><label>Open at login</label><span class="help" data-slot="login-help"></span></span>
+      <button class="switch" role="switch" aria-checked="true" data-slot="login" aria-label="Open at login"></button>
+    </div>
+    <p class="settings-note">Your data is one plain file on this computer. Nothing is sent anywhere.</p>
+  </section>
+</div>
+
+<script type="module" src="/main.ts"></script>
 </body>
 </html>

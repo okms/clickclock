@@ -48,6 +48,7 @@ export class MockPlatform implements Platform {
   public refuseLaunchAtLogin: boolean = false;
   public readonly copied: string[] = [];
   private trayHandlers: Set<(action: TrayAction) => void> = new Set();
+  private windowHiddenHandlers: Set<() => void> = new Set();
 
   constructor(opts?: MockOptions) {
     // Determine storage
@@ -113,6 +114,13 @@ export class MockPlatform implements Platform {
     // No-op
   }
 
+  onWindowHidden(handler: () => void): () => void {
+    this.windowHiddenHandlers.add(handler);
+    return () => {
+      this.windowHiddenHandlers.delete(handler);
+    };
+  }
+
   async quit(): Promise<void> {
     // No-op
   }
@@ -125,6 +133,12 @@ export class MockPlatform implements Platform {
   fireTray(action: TrayAction): void {
     for (const handler of this.trayHandlers) {
       handler(action);
+    }
+  }
+
+  fireWindowHidden(): void {
+    for (const handler of this.windowHiddenHandlers) {
+      handler();
     }
   }
 }

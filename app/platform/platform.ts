@@ -27,6 +27,8 @@ export interface Platform {
   copyText(text: string): Promise<void>;
   /** Hide the main window (TRAY-06) if the host supports it; otherwise no-op. */
   hideWindow(): Promise<void>;
+  /** Fires when the host hid the main window because the user closed it (TRAY-06). */
+  onWindowHidden(handler: () => void): () => void;
   /** Quit the product. */
   quit(): Promise<void>;
 }
