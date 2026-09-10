@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Capability for the main window: window show/hide/focus, events, and autostart. No fs, http, shell, or updater access (NF-01).",
+  "description": "Capability for the main window: window show/hide/focus, events, autostart, and opening the project's release page (UPD-04). No fs, shell, or updater access; no unrestricted http or opener access (NF-01).",
   "windows": ["main"],
   "permissions": [
     "core:default",
@@ -9,6 +9,10 @@
     "core:window:allow-show",
     "core:window:allow-hide",
     "core:window:allow-set-focus",
-    "autostart:default"
+    "autostart:default",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [{ "url": "https://github.com/okms/clickclock/*" }]
+    }
   ]
 }

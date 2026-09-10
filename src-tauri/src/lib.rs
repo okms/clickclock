@@ -7,10 +7,15 @@
 
 pub mod doc;
 pub mod tray_image;
+pub mod update;
 
 use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
+
+/// The project's public "releases/latest" page: the single URL the update
+/// check is allowed to request (UPD-02).
+const RELEASES_LATEST_URL: &str = "https://github.com/okms/clickclock/releases/latest";
 
 use tauri::{
     menu::{Menu, MenuItem, MenuItemBuilder, PredefinedMenuItem},
@@ -100,6 +105,42 @@ fn write_doc(app: AppHandle, json: String) -> Result<(), String> {
     let dir = app.path().app_data_dir().map_err(|err| err.to_string())?;
     let path = dir.join(DOC_FILENAME);
     doc::atomic_write(&path, &json).map_err(|err| err.to_string())
+}
+
+/// The result of a user-initiated update check (UPD-03).
+#[derive(serde::Serialize)]
+pub struct UpdateInfo {
+    pub current: String,
+    pub latest: String,
+    pub url: String,
+    pub is_newer: bool,
+}
+
+/// UPD-01..UPD-04: checks whether a newer release exists. Only ever called
+/// on explicit user action from the UI — nothing in this crate calls it on
+/// a timer or at startup. Makes exactly one HTTPS request (UPD-02); version
+/// comparison happens locally via `update::is_newer`.
+#[tauri::command]
+async fn check_for_updates(app: AppHandle) -> Result<UpdateInfo, String> {
+    let current = app.package_info().version.to_string();
+
+    let client = reqwest::Client::builder()
+        .redirect(reqwest::redirect::Policy::none())
+        .timeout(Duration::from_secs(10))
+        .user_agent(format!("ClickClock/{current}"))
+        .build()
+        .map_err(|err| err.to_string())?;
+
+    let latest = update::fetch_latest_tag(&client, RELEASES_LATEST_URL).await?;
+    let is_newer = update::is_newer(&current, &latest)?;
+    let url = format!("https://github.com/okms/clickclock/releases/tag/v{latest}");
+
+    Ok(UpdateInfo {
+        current,
+        latest,
+        url,
+        is_newer,
+    })
 }
 
 /// Updates the tray tooltip, the enabled state of the Start/Pause/Stop menu
@@ -247,11 +288,13 @@ pub fn run() {
             MacosLauncher::LaunchAgent,
             None,
         ))
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             idle_seconds,
             read_doc,
             write_doc,
-            set_tray
+            set_tray,
+            check_for_updates
         ])
         .setup(|app| {
             setup_tray(app)?;
