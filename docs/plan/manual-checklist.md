@@ -3,6 +3,15 @@
 Run against a bundled build (`pnpm tauri build`), not `tauri dev`, because launch-at-login
 points at the built app. Tick, date, and note the build hash.
 
+### Verified 2026-09-10 on the dev build (`ea9dfed`), macOS, by the planning session
+Launch shows Stopped/`0.00`/`00:00` and Start (TT-08); date line in words (DISP-07);
+Start ticks every second with Running and a green dot, Pause keeps the total, Start
+resumes, the one control relabels (TT-01, TT-02, TT-03, DISP-04); several sessions sum
+(TT-06, seen in the stored JSON); the JSON document is readable and matches (PERS-05);
+threshold change to 1 minute persisted and reflected in the note (SET-01, IDLE-09);
+tray icon visible as a clock glyph in the menu bar (TRAY-01); appearance follows the
+system (SET-04, dark). Everything below is still to be run against the bundle.
+
 ## Launch and state
 - [ ] TT-08 First launch shows Stopped, `0.00`, `00:00`; the primary control says Start.
 - [ ] TT-08 Relaunch with a stored total shows Paused with that total; never Running.

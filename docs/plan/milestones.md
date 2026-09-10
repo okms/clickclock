@@ -24,6 +24,11 @@ Model column is the default per `AGENTS.md`; escalate only as it allows.
 - [x] M3.3 Spike: `idle_seconds` returns sane values on macOS (manual check) — sonnet (user-idle 0.5 compiles and returns via idle_seconds; value checked in M4.1)
 
 ## M4: First version for review
-- [ ] M4.1 `pnpm tauri build` produces a runnable app bundle; manual checklist in `docs/plan/manual-checklist.md` executed
-- [ ] M4.2 README updated with build/run instructions and the Gatekeeper note
-- [ ] M4.3 Spec statuses reviewed; anything not implemented is reflected in the plan
+- [x] M4.1 `pnpm tauri build` produces a runnable app bundle; manual checklist in `docs/plan/manual-checklist.md` executed — bundle built 2026-09-10: `Consultant Timer.app` 10 MB, dmg 3.0 MB (aarch64). Checklist: see `manual-checklist.md` for what was verified and what remains.
+- [x] M4.2 README updated with build/run instructions and the Gatekeeper note — `README.md`
+- [x] M4.3 Spec statuses reviewed; anything not implemented is reflected in the plan — all Baseline and Accepted requirements have an implementation; TT-12, TRAY-05, HIST-04, HIST-05, PERS-07 remain Deferred
+
+## Open items after v1 (for the owner's review)
+- Windows build untested (NF-05); the code paths exist (user-idle, autostart plugin) but no Windows machine was available.
+- Manual checklist items not yet run: tray menu actions, close-to-tray notice, second-instance focus, launch-at-login in System Settings, sleep/wake gap, idle auto-pause and auto-resume against a real idle period. See `manual-checklist.md`.
+- Filled primary button in the Paused/Stopped state was verified in Chrome (mock build) but not yet seen in the Tauri window after the native-appearance reset landed.
