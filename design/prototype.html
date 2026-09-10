@@ -258,10 +258,10 @@ body {
       <button data-act="stopped">Stopped</button>
     </div>
     <div class="group"><span>Time</span>
-      <button data-act="t0">0.00</button>
-      <button data-act="t1">1.08</button>
-      <button data-act="t7">7.50</button>
-      <button data-act="t9">9.27</button>
+      <button data-act="t0">0:00</button>
+      <button data-act="t1">1:05</button>
+      <button data-act="t7">7:30</button>
+      <button data-act="t9">9:16</button>
     </div>
     <div class="group"><span>View</span>
       <button data-act="main">Today</button>
@@ -296,11 +296,10 @@ body {
     <section class="view is-active" data-view="main">
       <p class="date" data-slot="date">Thursday 10 September</p>
       <div class="figure">
-        <span class="hours" data-slot="hours" title="Click to copy">7.50</span>
-        <span class="unit">hours</span>
+        <span class="hours" data-slot="hours" title="Click to copy">7:30</span>
         <span class="copied" data-slot="copied">Copied</span>
       </div>
-      <p class="hhmm" data-slot="hhmm">07:30</p>
+      <p class="hhmm" data-slot="hhmm" title="Click to copy">7.50 hours</p>
 
       <div class="actions" data-slot="actions">
         <div class="normal">
@@ -386,7 +385,7 @@ body {
   ];
 
   const fmtDec = s => (Math.round((s / 3600) * 100) / 100).toFixed(2);
-  const fmtHM  = s => { const m = Math.floor(s / 60); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+  const fmtHM  = s => { const m = Math.floor(s / 60); return String(Math.floor(m / 60)) + ':' + String(m % 60).padStart(2, '0'); };
   const fmtDate = d => d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 
   // ---------- build the two frames ----------
@@ -441,7 +440,7 @@ body {
     noteTimer = setTimeout(() => { noteOverride = null; render(); }, 2500);
   }
   function copyFlash(node) {
-    const text = fmtDec(state.seconds);
+    const text = fmtHM(state.seconds);
     if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
     frames.forEach(f => {
       const c = $(f, 'copied'); c.classList.add('is-on');
@@ -469,8 +468,8 @@ body {
 
       // figures
       $(node, 'date').textContent = fmtDate(state.date);
-      $(node, 'hours').textContent = dec;
-      $(node, 'hhmm').textContent = hm;
+      $(node, 'hours').textContent = hm;
+      $(node, 'hhmm').textContent = dec + ' hours';
 
       // actions
       $(node, 'primary').textContent = state.status === 'running' ? 'Pause' : 'Start';
@@ -478,7 +477,7 @@ body {
       clear.disabled = state.status === 'stopped' && state.seconds === 0;
       $(node, 'actions').classList.toggle('is-confirm', state.confirm);
       $(node, 'confirm').classList.toggle('is-on', state.confirm);
-      $(node, 'confirm-text').textContent = "Clear today's " + dec + ' hours?';
+      $(node, 'confirm-text').textContent = "Clear today's " + hm + '?';
       $(node, 'note').textContent = noteOverride ||
         ('Pauses by itself after ' + state.thresholdMin + ' minute' + (state.thresholdMin === 1 ? '' : 's') + ' away. Everything stays on this computer.');
 
@@ -508,9 +507,9 @@ body {
   function row(name, hours, isWeek) {
     const li = document.createElement('li'); li.className = 'row' + (isWeek ? ' week' : '');
     const n = document.createElement('span'); n.textContent = name;
-    const d = document.createElement('span'); d.className = 'num dec'; d.textContent = hours.toFixed(2); d.title = 'Click to copy';
+    const d = document.createElement('span'); d.className = 'num dec'; d.textContent = fmtHM(hours * 3600); d.title = 'Click to copy';
     d.addEventListener('click', () => { if (navigator.clipboard) navigator.clipboard.writeText(d.textContent).catch(() => {}); });
-    const t = document.createElement('span'); t.className = 'num time'; t.textContent = fmtHM(hours * 3600);
+    const t = document.createElement('span'); t.className = 'num time'; t.textContent = hours.toFixed(2);
     li.append(n, d, t); return li;
   }
 

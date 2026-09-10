@@ -51,8 +51,8 @@ tick (`font-variant-numeric: tabular-nums`). Weights used: 400 and 600 only.
 
 | Role | Size / line | Weight | Tracking | Notes |
 |---|---|---|---|---|
-| Hours figure | 104 px / 1 | 600 | −0.035em | `7.50`; the unit `hours` is a separate 15 px element so copying the figure yields `7.50` alone (`DISP-05`) |
-| `HH:MM` | 26 px / 1.2 | 400 | −0.01em | colour `--ink-2` |
+| Time figure | 104 px / 1 | 600 | −0.035em | `7:30`, `0:10`; no unit label, the colon says it all; copying yields the figure alone (`DISP-05`) |
+| Timesheet line | 26 px / 1.2 | 400 | −0.01em | `7.50 hours`, colour `--ink-2`; the decimal value with its unit |
 | State word | 15 px / 1.4 | 600 | 0 | colour follows state |
 | Body, buttons | 15 px / 1.4 | 400 / 600 | 0 | |
 | Date, notes, meta | 13 px / 1.5 | 400 | 0 | colour `--ink-2` |
@@ -78,8 +78,8 @@ Sentence case everywhere. No all-caps.
 │                                      │
 │ Thursday 10 September               │  13 px, --ink-2
 │                                      │
-│ 7.50 hours                           │  104 px figure, 15 px unit at baseline
-│ 07:30                                │  26 px, --ink-2
+│ 7:30                                 │  104 px figure
+│ 7.50 hours                           │  26 px, --ink-2 (timesheet value)
 │                                      │
 │                                      │
 │ ┌──────────────────────────────────┐ │
@@ -123,7 +123,7 @@ Quiet text button under the primary control. Disabled (`--ink-2` at 50 %) when S
 with a zero total. On activation the action area swaps in place to a confirmation:
 
 ```
-Clear today's 7.50 hours?
+Clear today's 7:30?
 [ Clear ]  Keep
 ```
 
@@ -133,8 +133,8 @@ briefly reads "Today cleared".
 
 ### Copy (`DISP-05`, `DISP-08`)
 
-The figure and `HH:MM` are selectable text. Clicking the figure copies `7.50` and shows a
-2 s inline "Copied" beside the unit.
+Both figures are selectable text. Clicking either copies its own value (`7:30` or `7.50`)
+and shows a 2 s inline "Copied" beside it.
 
 ---
 
@@ -147,17 +147,18 @@ Today
                                            
 Previous days                              
                                            
-This week            31.25    31:15        
-Tue 9 Sep             8.25    08:15        
-Mon 8 Sep             7.50    07:30        
+This week            31:15    31.25        
+Tue 9 Sep             8:15     8.25        
+Mon 8 Sep             7:30     7.50        
                                            
-Week 36              38.00    38:00        
-Fri 5 Sep             7.75    07:45        
+Week 36              38:00    38.00        
+Fri 5 Sep             7:45     7.75        
 …                                          
 ```
 
-Rows are 40 px, hairline-separated, figures tabular and right-aligned in two columns.
-Week rows are 600 weight. Clicking a decimal figure copies it. Empty state: "Nothing yet.
+Rows are 40 px, hairline-separated, figures tabular and right-aligned in two columns:
+hours and minutes in `--ink`, decimal hours in `--ink-2`. Week rows are 600 weight.
+Clicking either figure copies it. Empty state: "Nothing yet.
 Previous days appear here once you have worked a full day."
 
 ---
@@ -199,7 +200,7 @@ not allow this change." (`AUTO-04`).
 The tray item is a single rendered image, 22 pt tall (44 px at 2x), in the platform's
 template style (black shapes with alpha; macOS recolours it for light and dark menu bars).
 
-- **Time mode** (default, `TRAY-09`): today's decimal hours, `7.50`, set in Schibsted
+- **Time mode** (default, `TRAY-09`): today's hours and minutes, `7:30`, set in Schibsted
   Grotesk at 14 pt, vertically centred, 2 pt side padding; width follows the text.
 - **Icon mode** (`TRAY-10` off): the clock glyph, a stroked circle with a minute hand at
   twelve and an hour hand at two, in a 22 pt square.
@@ -209,7 +210,7 @@ template style (black shapes with alpha; macOS recolours it for light and dark m
   adds nothing.
 - **Interaction**: left click toggles Start/Pause (`TRAY-08`). Right click opens the menu:
   Start, Pause, Stop / Clear today, Show, Quit, with inapplicable items disabled
-  (`TRAY-03`). Tooltip: `Running, 7.50 hours (07:30)` (`TRAY-02`).
+  (`TRAY-03`). Tooltip: `Running, 7:30 (7.50 hours)` (`TRAY-02`).
 - **Windows**: fixed 16 px tray squares cannot show text, so icon mode is always used
   there, with the overlay, and the tooltip carries the time.
 

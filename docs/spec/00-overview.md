@@ -91,3 +91,7 @@ Each requirement has:
   `UPD-05` (Deferred) and narrowed `NF-01`: the check is manual only and is the single
   network access the product has. Planner's choice: the request resolves the project's
   releases/latest page redirect rather than calling an API, so no keys or rate limits.
+- 2026-09-10: Owner's review: decimal hours as the primary figure read badly ("what does
+  0.19 hours mean?"). DISP-02 revised: hours and minutes (`H:MM`) are primary in the main
+  view and the tray; decimal hours are the secondary, timesheet value. DISP-03 drops the
+  leading zero on hours.

@@ -41,7 +41,7 @@ The tray icon's primary activation (left click) must start tracking when the pro
 not Running and pause it when it is Running, exactly like the main control (`TT-03`).
 
 ### TRAY-09 The tray shows today's total — Accepted
-By default the tray item must show today's total as text in decimal hours (`7.50`, the
+By default the tray item must show today's total as text in hours and minutes (`7:30`, the
 primary figure of `DISP-02`) instead of a fixed icon, updating live like the main view.
 
 *Platform note.* This applies where the tray supports variable-width items (the macOS
