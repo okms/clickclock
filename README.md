@@ -8,13 +8,24 @@ It lives in the menu bar or system tray and never talks to a network.
 
 Download the latest release from this repository's Releases page.
 
-- **macOS** (Apple Silicon or Intel): open the `.dmg`, drag ClickClock to Applications.
-  The app is not code-signed, so the first launch may be blocked by Gatekeeper: right-click
-  the app, choose Open, then confirm.
-- **Windows**: run the `.msi` or the NSIS `.exe` installer. SmartScreen may show
+- **macOS** (Apple Silicon `aarch64` or Intel `x64`): open the `.dmg` and drag ClickClock to
+  Applications. The app is ad-hoc signed but not notarized with an Apple Developer ID, so
+  the first launch is blocked with "Apple could not verify ClickClock is free of malware".
+  Click Done, open System Settings, go to Privacy & Security, scroll to the Security section
+  and click **Open Anyway**, then confirm. Alternatively, once, in Terminal:
+
+  ```sh
+  xattr -d com.apple.quarantine /Applications/ClickClock.app
+  ```
+
+  If macOS instead says the app "is damaged", you have a build older than v0.1.1; download
+  the current release.
+- **Windows** (`x64`): run the `.msi` or the `-setup.exe` installer. SmartScreen may show
   "Unknown publisher": choose More info, then Run anyway.
 
-Neither warning means the app uses the network. It does not.
+Neither warning means the app uses the network. It does not. Removing the warnings for good
+needs an Apple Developer ID (signing and notarization) and a Windows code-signing
+certificate; neither is configured.
 
 ## Where things are
 
